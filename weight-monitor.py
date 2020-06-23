@@ -1,5 +1,8 @@
 from picamera import PiCamera
 from time import sleep
+import os
+
+currentDirectory = os.getcwd()
 
 camera = PiCamera()
 
@@ -7,4 +10,4 @@ camera.start_preview()
 sleep(5)
 camera.stop_preview()
 
-camera.capture('/home/pi/projects/weightMonitor/scale.jpg')
+camera.capture(currentDirectory + 'scale.jpg')
