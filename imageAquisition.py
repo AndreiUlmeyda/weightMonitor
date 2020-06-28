@@ -7,7 +7,7 @@ currentDirectory = os.getcwd()
 camera = PiCamera()
 
 camera.start_preview()
-sleep(8)
+sleep(20)
 camera.stop_preview()
 
-camera.capture(currentDirectory + 'scale.jpg')
+camera.capture(currentDirectory + '/scale01.jpg')

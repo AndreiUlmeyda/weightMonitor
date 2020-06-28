@@ -1,33 +1,50 @@
-import os
-from PIL import Image
+from PIL import Image, ImageChops, ImageDraw
 
-# load
-image = Image.open('scale.jpg')
+# load image
+image = Image.open('scale01.jpg')
 
-# rotate
-rotationAngle = 195
-image = image.rotate(rotationAngle)
+# compensate for rotational offset between camera and scale
+rotationAngle = 191
+rotated = image.rotate(rotationAngle)
 
-# mask for red pixels
-imageRGB = image.split()
-R,G,B = 0,1,2
-threshold = 70
-mask = imageRGB[R].point(lambda i: i > threshold and 255)
-#mask.show()
+# compensate for translational offset between camera and scale
+offsetX, offsetY = -100, 400
+translated = ImageChops.offset(rotated, offsetX, offsetY)
 
-topmost, leftmost = 999999, 999999
+# approximately crop scale display
+cropWidthX, cropWidthY = 500, 500
+cropBox = (cropWidthX, cropWidthY, translated.size[0] - cropWidthX, translated.size[0] - cropWidthY)
+cropped = translated.crop(cropBox)
+
+# mask with red pixels above threshold
+colorChannels = cropped.split()
+redChannel = colorChannels[0]
+
+def whiteWhenAboveThreshold(pixelValue):
+    threshold = 70
+    return (255 if pixelValue > threshold else 0)
+
+redMask = redChannel.point(whiteWhenAboveThreshold)
+
+# crop to region containing non-zero pixels
+reallyHighNumber = 999999999
+topmost, leftmost = reallyHighNumber, reallyHighNumber
 bottom, rightmost = 0, 0
-imagePixels = image.load()
-maskPixels = mask.load()
-for ix in range (mask.size[0]):
-    for iy in range (mask.size[1]):
-        if maskPixels[ix, iy]:
+maskPixels = redMask.load()
+
+for ix in range (redMask.size[0]):
+    for iy in range (redMask.size[1]):
+        if maskPixels[ix, iy] == 255:
             topmost = min(topmost, iy)
             bottom = max(bottom, iy)
             leftmost = min(leftmost, ix)
             rightmost = max(rightmost, ix)
 
-print (topmost, bottom, leftmost, rightmost)
-box =(leftmost, topmost, rightmost, bottom)
-region = mask.crop(box)
-region.show()
+cropBox = (leftmost, topmost, rightmost, bottom)
+nonZeroRegion = redMask.crop(cropBox)
+
+# draw on the image
+regionAsRGB = nonZeroRegion.convert('RGBA')
+draw = ImageDraw.Draw(regionAsRGB)
+draw.rectangle([0,0,200,200], outline='red')
+regionAsRGB.show()
