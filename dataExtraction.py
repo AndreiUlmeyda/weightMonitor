@@ -44,7 +44,11 @@ cropBox = (leftmost, topmost, rightmost, bottom)
 nonZeroRegion = redMask.crop(cropBox)
 
 # draw on the image
+def drawRectangle(img, x0, y0, x1, y1):
+    draw = ImageDraw.Draw(img)
+    draw.rectangle([x0,y0,x1,y1], outline='red')
+    
 regionAsRGB = nonZeroRegion.convert('RGBA')
-draw = ImageDraw.Draw(regionAsRGB)
-draw.rectangle([0,0,200,200], outline='red')
+drawRectangle(regionAsRGB, 40, 5, 125, 15)
+
 regionAsRGB.show()
