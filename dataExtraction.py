@@ -1,4 +1,6 @@
 from PIL import Image, ImageChops, ImageDraw
+import subprocess
+Image.MAX_IMAGE_PIXELS = None
 
 # load image
 image = Image.open('scale01.jpg')
@@ -24,13 +26,39 @@ def whiteWhenAboveThreshold(pixelValue):
     threshold = 70
     return (255 if pixelValue > threshold else 0)
 
-redMask = redChannel.point(whiteWhenAboveThreshold)
+#redMask = redChannel.point(whiteWhenAboveThreshold)
+redMask = Image.new('L',(cropped.size[0], cropped.size[1]))
+
+for ix in range (cropped.size[0]):
+    for iy in range (cropped.size[1]):
+        pixel = cropped.getpixel((ix, iy))
+        red = pixel[0]
+        green = pixel[1]
+        blue = pixel[2]
+        totalIntensity = red + green + blue
+        if totalIntensity == 0:
+            redMask.putpixel((ix, iy), 0)
+        else:
+            redProportion = max(0, (red - green) - blue)
+            if redProportion > 0.5:
+                redMask.putpixel((ix, iy), redProportion)#int(redProportion*255))
+            else:
+                redMask.putpixel((ix, iy), redProportion)#int(redProportion*255))
 
 # crop to region containing non-zero pixels
 reallyHighNumber = 999999999
 topmost, leftmost = reallyHighNumber, reallyHighNumber
 bottom, rightmost = 0, 0
 maskPixels = redMask.load()
+#redMask.show()
+redMask.save('herpderp.jpg')
+completed = subprocess.run(["ssocr", "invert", "-DT", "-d", "-1", "-c", "digit", "-t", "25", "/home/pi/workspace/weightMonitor/herpderp.jpg"], stdout=subprocess.PIPE)
+print(completed.stdout)
+outout = completed.stdout.replace(b'b', b'', 1)
+command = 'echo %s | festival --tts' % (completed.stdout)
+print(command)
+subprocess.run(["spd-say", completed.stdout])
+#subprocess.run(["echo", completed.stdout, "|", "festival", "--tts"])
 
 for ix in range (redMask.size[0]):
     for iy in range (redMask.size[1]):
@@ -101,8 +129,6 @@ rectangleCoordinates = [
         ('13', 387, 157, vertical)
 ]
 
-for coord in rectangleCoordinates:
-    rectangle = Rectangle(coord[1], coord[2], coord[3], label=coord[0])
-    rectangle.drawOn(regionAsRGB)
-
-regionAsRGB.show()
+#for coord in rectangleCoordinates:
+#   rectangle = Rectangle(coord[1], coord[2], coord[3], label=coord[0])
+#    rectangle.drawOn(regionAsRGB)
