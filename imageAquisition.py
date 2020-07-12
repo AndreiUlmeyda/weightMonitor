@@ -3,6 +3,7 @@ from time import sleep
 import os
 
 currentDirectory = os.getcwd()
+filename = '/current.jpg'
 
 camera = PiCamera()
 
@@ -10,4 +11,4 @@ camera.start_preview()
 sleep(8)
 camera.stop_preview()
 
-camera.capture(currentDirectory + '/scale04.jpg')
+camera.capture(currentDirectory + filename, resize=(1024, 576))

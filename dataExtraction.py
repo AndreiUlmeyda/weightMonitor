@@ -1,37 +1,44 @@
-from PIL import Image, ImageChops, ImageDraw
+from PIL import Image, ImageChops
 import subprocess
+import os
 Image.MAX_IMAGE_PIXELS = None
 
 # load image
-image = Image.open('scale01.jpg')
+image = Image.open('current.jpg')
 
 # compensate for rotational offset between camera and scale
 rotationAngle = 191
 rotated = image.rotate(rotationAngle)
 
+# TODO update crop and remove translation
 # compensate for translational offset between camera and scale
 offsetX, offsetY = -100, 400
 translated = ImageChops.offset(rotated, offsetX, offsetY)
 
 # approximately crop scale display
-cropWidthX, cropWidthY = 500, 500
-cropBox = (cropWidthX, cropWidthY, translated.size[0] - cropWidthX, translated.size[0] - cropWidthY)
+cropBox = (330, 000, 680, 180)
 cropped = translated.crop(cropBox)
 
-# mask with red pixels above threshold
-colorChannels = cropped.split()
+# transform to try and restore horizontal and vertical lines
+nw = (0,0)
+sw = (20,170)
+se = (330, 180)
+ne = (370,0)
+transformed = cropped.transform(cropped.size, Image.QUAD,
+                                [
+                                    nw[0],nw[1],sw[0],sw[1],se[0],se[1],ne[0],ne[1]
+                                ],
+                                Image.BILINEAR)
+
+# try to only retain red pixels
+colorChannels = transformed.split()
 redChannel = colorChannels[0]
 
-def whiteWhenAboveThreshold(pixelValue):
-    threshold = 70
-    return (255 if pixelValue > threshold else 0)
+redMask = Image.new('L',(transformed.size[0], transformed.size[1]))
 
-#redMask = redChannel.point(whiteWhenAboveThreshold)
-redMask = Image.new('L',(cropped.size[0], cropped.size[1]))
-
-for ix in range (cropped.size[0]):
-    for iy in range (cropped.size[1]):
-        pixel = cropped.getpixel((ix, iy))
+for ix in range (transformed.size[0]):
+    for iy in range (transformed.size[1]):
+        pixel = transformed.getpixel((ix, iy))
         red = pixel[0]
         green = pixel[1]
         blue = pixel[2]
@@ -40,95 +47,37 @@ for ix in range (cropped.size[0]):
             redMask.putpixel((ix, iy), 0)
         else:
             redProportion = max(0, (red - green) - blue)
-            if redProportion > 0.5:
-                redMask.putpixel((ix, iy), redProportion)#int(redProportion*255))
+            if redProportion > 10:
+                redMask.putpixel((ix, iy), 255)
             else:
-                redMask.putpixel((ix, iy), redProportion)#int(redProportion*255))
+                redMask.putpixel((ix, iy), 0)
 
-# crop to region containing non-zero pixels
-reallyHighNumber = 999999999
-topmost, leftmost = reallyHighNumber, reallyHighNumber
-bottom, rightmost = 0, 0
-maskPixels = redMask.load()
-#redMask.show()
-redMask.save('herpderp.jpg')
-completed = subprocess.run(["ssocr", "invert", "-DT", "-d", "-1", "-c", "digit", "-t", "25", "/home/pi/workspace/weightMonitor/herpderp.jpg"], stdout=subprocess.PIPE)
-print(completed.stdout)
-outout = completed.stdout.replace(b'b', b'', 1)
-command = 'echo %s | festival --tts' % (completed.stdout)
-print(command)
-subprocess.run(["spd-say", completed.stdout])
-#subprocess.run(["echo", completed.stdout, "|", "festival", "--tts"])
+filteredFilename = 'current_filtered.jpg'
+redMask.save(filteredFilename)
+currentDirectory = os.getcwd()
+filePath = currentDirectory + '/' +  filteredFilename
 
-for ix in range (redMask.size[0]):
-    for iy in range (redMask.size[1]):
-        if maskPixels[ix, iy] == 255:
-            topmost = min(topmost, iy)
-            bottom = max(bottom, iy)
-            leftmost = min(leftmost, ix)
-            rightmost = max(rightmost, ix)
+completed = subprocess.run(["ssocr", "invert", "-D", "-T", "-C", "-d", "-1", "-c", "digit", "-t", "25", filePath], stdout=subprocess.PIPE)
+readout = completed.stdout
+print(readout)
 
-cropBox = (leftmost, topmost, rightmost, bottom)
-nonZeroRegion = redMask.crop(cropBox)
+report = ''.join(list(filter(lambda x: x != '.', str(readout))))
 
-# draw on the image
+report = report[2:4] + '.' + report[4]
 
-class Rectangle:
-    label = ''
-    lengthOfLongSide = 85
-    lengthOfShortSide = 10
-    
-    originX, originY = 0, 0
-    lengthX, lengthY = 85, 10
-    orientation = 'horizontal'
-    color = 'red'
-    
-    def __init__(self, originX, originY, orientation='horizontal', label = ''):
-        self.orientation = orientation
-        self.originX = originX
-        self.originY = originY
-        self.label = label
-        self.sideLengthsFromOrientation()
-        
-    def sideLengthsFromOrientation(self):
-        if self.orientation == 'horizontal':
-            self.lengthX = self.lengthOfLongSide
-            self.lengthY = self.lengthOfShortSide
-        else:
-            self.lengthX = self.lengthOfShortSide
-            self.lengthY = self.lengthOfLongSide
-    
-    def drawOn(self, image):
-        drawable = ImageDraw.Draw(image)        
-        oppositeCornerX = self.originX + self.lengthX
-        oppositeCornerY = self.originY + self.lengthY
-        rectangleCoordinates = [
-            self.originX,
-            self.originY,
-            oppositeCornerX,
-            oppositeCornerY
-        ]
-        
-        drawable.rectangle(rectangleCoordinates, outline=self.color)
-        drawable.text((self.originX + 2, self.originY), self.label, fill='green')
-    
-regionAsRGB = nonZeroRegion.convert('RGBA')
+print(report)
+print(completed.stderr)
 
-horizontal = 'horizontal'
-vertical = 'vertical'
+subprocess.run(["spd-say", "weight readout"])
+subprocess.run(["spd-say", report])
 
-rectangleCoordinates = [
-        ('1', 40, 5, horizontal),
-        ('2', 8, 37, vertical),
-        ('3', 157, 34, vertical),
-        ('4', 40, 135, horizontal),
-        ('5', 18, 158, vertical),
-        ('6', 163, 158, vertical),
-        ('7', 60, 248, horizontal),
-        ('10', 397, 28, vertical),
-        ('13', 387, 157, vertical)
-]
+debugImage = Image.open('testbild.png')
 
-#for coord in rectangleCoordinates:
-#   rectangle = Rectangle(coord[1], coord[2], coord[3], label=coord[0])
-#    rectangle.drawOn(regionAsRGB)
+debugImages = Image.new(mode='RGBA', size=(350, 180*3), color='grey')
+debugImages.paste(transformed,(0,0))
+debugImages.paste(redMask,(0, 180))
+debugImages.paste(debugImage,(0,360))
+debugImages.show()
+debugImages.save('debugImages.png')
+os.remove('testbild.png')
+os.remove(filteredFilename)
