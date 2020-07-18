@@ -2,9 +2,9 @@ from picamera import PiCamera
 import RPi.GPIO as GPIO
 from time import sleep
 from PIL import Image
-import requests
+import subprocess
 import os
-from dataExtraction import ScaleReader
+from sevenSegmentReader import ScaleReader
 
 
 currentDirectory = os.getcwd()
@@ -43,15 +43,12 @@ def takePictureReadDigitsSpellThemOut():
     except ValueError:
         print(f"error: readout '{scaleReader.getWeight()}' cannot be interpreted as a number.")
         return
-        
-    
-    if weight <95 and weight > 83:    
-        requestUrl = f"http://localhost:8086/write?db=sensors"
-        headers = {'Content-Type': 'application/json'}
-        response = requests.post(requestUrl, data = f"telemetry weight={weight}", headers = headers)
-        if response.status_code != 204:
-            print(response.status_code)
-            print(response.text)
+
+    if weight <95 and weight > 83: 
+        influxLine = f"INSERT telemetry weight={weight}"
+        subProcessOutput = subprocess.run(['influx','-database','sensors','-execute', influxLine], stdout=subprocess.PIPE)
+        if subProcessOutput.stderr != None:
+            print(subProcessOutput.stderr)
     else:
         print(f"error: readout '{weight}' is not in the range of assumed values between 83kg and 95kg")
         return
