@@ -1,4 +1,4 @@
-from PIL import Image, ImageChops
+from PIL import Image
 import subprocess
 import os
 
@@ -34,9 +34,6 @@ class ScaleReader:
         self.transformedImage = transformed
 
         # try to only retain red pixels
-        colorChannels = transformed.split()
-        redChannel = colorChannels[0]
-
         redMask = Image.new('L',(transformed.size[0], transformed.size[1]))
 
         for ix in range (transformed.size[0]):
@@ -62,14 +59,10 @@ class ScaleReader:
 
         completed = subprocess.run(["ssocr", "invert", "-D", "-T", "-C", "-d", "-1", "-c", "digit", "-t", "25", filePath], stdout=subprocess.PIPE)
         readout = completed.stdout
-        print(readout)
 
         report = ''.join(list(filter(lambda x: x != '.', str(readout))))
 
         self.weight = report[2:4] + '.' + report[4]
-
-        print(self.weight)
-        print(completed.stderr)
     
     def textToSpeechTheValue(self):
         text = f"The weight readout is is {self.weight}."

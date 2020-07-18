@@ -37,13 +37,26 @@ def takePictureReadDigitsSpellThemOut():
     scaleReader.loadImage()
     scaleReader.readDigits()
     scaleReader.textToSpeechTheValue()
-    weight = scaleReader.getWeight()
+    weight = 0
+    try:
+        weight = float(scaleReader.getWeight())
+    except ValueError:
+        print(f"error: readout '{scaleReader.getWeight()}' cannot be interpreted as a number.")
+        return
+        
     
-    requestUrl = f"http://localhost:8086/write?db=sensors"
-    headers = {'Content-Type': 'application/json'}
-    response = requests.post(requestUrl, data = f"telemetry weight={weight}", headers = headers)
-    print(response)
-    #scaleReader.showDebugImages()
+    if weight <95 and weight > 83:    
+        requestUrl = f"http://localhost:8086/write?db=sensors"
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(requestUrl, data = f"telemetry weight={weight}", headers = headers)
+        if response.status_code != 204:
+            print(response.status_code)
+            print(response.text)
+    else:
+        print(f"error: readout '{weight}' is not in the range of assumed values between 83kg and 95kg")
+        return
+
+    scaleReader.showDebugImages()
     
 def pinHighForAnotherWhile():
     state = GPIO.input(10)
@@ -53,12 +66,13 @@ def pinHighForAnotherWhile():
     return state
     
 def waitForPinHighStateThenDo(action):
-    print("waiting for button...")
+    print("ready to read weight when button is pressed...")
     while True:
         if GPIO.input(10):
             if pinHighForAnotherWhile():
-                print("button was pressed")
+                print("reading...")
                 action()
+                waitForPinHighStateThenDo(action)
         sleep(0.1)
 
 waitForPinHighStateThenDo(takePictureReadDigitsSpellThemOut)
