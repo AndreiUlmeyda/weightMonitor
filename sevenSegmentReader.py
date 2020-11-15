@@ -19,7 +19,7 @@ class ScaleReader:
     def readWeightFromDisplay(self):
         self.timestamp =  datetime.now().strftime("%Y%m%d%I%M")
         # compensate for rotational offset between camera and scale, rotates counterclockwise
-        rotationAngle = 201
+        rotationAngle = 0
         rotated = self.inputImage.rotate(rotationAngle)
         rotated.show()
 
@@ -31,17 +31,20 @@ class ScaleReader:
         with open('config.json') as file:
             config = json.load(file)
         
+        print(f'config was:\n {config}')
         nw = tuple(config['north-west'])
         sw = tuple(config['south-west'])
         se = tuple(config['south-east'])
         ne = tuple(config['north-east'])
 
-        transformed = cropped.transform(cropped.size, Image.QUAD,
+        transformed = self.inputImage.transform(self.inputImage.size, Image.QUAD,
                                         [
                                             nw[0],nw[1],sw[0],sw[1],se[0],se[1],ne[0],ne[1]
                                         ],
                                         Image.BILINEAR)
-        self.transformedImage = transformed
+        (width, height) = transformed.size
+        resizeFactor = 4
+        self.transformedImage = transformed.resize((width // resizeFactor, height // resizeFactor))
 
         # try to only retain red pixels
         redMask = Image.new('L',(transformed.size[0], transformed.size[1]))
