@@ -1,0 +1,18 @@
+{
+    "north-west": [
+        0,
+        0
+    ],
+    "south-west": [
+        20,
+        170
+    ],
+    "south-east": [
+        33,
+        180
+    ],
+    "north-east": [
+        370,
+        0
+    ]
+}
