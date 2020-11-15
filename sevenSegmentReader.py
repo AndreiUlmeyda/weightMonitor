@@ -1,31 +1,41 @@
 from PIL import Image
 import subprocess
 import os
+from datetime import datetime
+import json
 
 class ScaleReader:
     weight = 0
     inputImage = None
     transformedImage = None
     redMaskImage = None
-    filteredFilename = 'current_filtered.jpg'
+    archiveFolderName = 'archive/'
+    fileExtension = '.jpg'
+    timestamp = None
     
-    def loadImage(self):
-        self.inputImage = Image.open('current.jpg')
+    def __init__(self, image):
+        self.inputImage = image
         
-    def readDigits(self):
+    def readWeightFromDisplay(self):
+        self.timestamp =  datetime.now().strftime("%Y%m%d%I%M")
         # compensate for rotational offset between camera and scale, rotates counterclockwise
         rotationAngle = 201
         rotated = self.inputImage.rotate(rotationAngle)
+        rotated.show()
 
         # approximately crop scale display
         cropBox = (335, 245, 690, 420)
         cropped = rotated.crop(cropBox)
 
         # transform to try and restore horizontal and vertical lines
-        nw = (0,0)
-        sw = (20,170)
-        se = (330, 180)
-        ne = (370,0)
+        with open('config.json') as file:
+            config = json.load(file)
+        
+        nw = tuple(config['north-west'])
+        sw = tuple(config['south-west'])
+        se = tuple(config['south-east'])
+        ne = tuple(config['north-east'])
+
         transformed = cropped.transform(cropped.size, Image.QUAD,
                                         [
                                             nw[0],nw[1],sw[0],sw[1],se[0],se[1],ne[0],ne[1]
@@ -52,10 +62,9 @@ class ScaleReader:
                     else:
                         redMask.putpixel((ix, iy), 0)
 
-        redMask.save(self.filteredFilename)
         self.redMaskImage = redMask
-        currentDirectory = os.getcwd()
-        filePath = currentDirectory + '/' +  self.filteredFilename
+        filePath = 'filtered.jpg'
+        redMask.save(filePath)
 
         completed = subprocess.run(["ssocr", "invert", "-D", "-T", "-C", "-d", "-1", "-c", "digit", "-t", "25", filePath], stdout=subprocess.PIPE)
         readout = completed.stdout
@@ -63,24 +72,28 @@ class ScaleReader:
         report = ''.join(list(filter(lambda x: x != '.', str(readout))))
 
         self.weight = report[2:4] + '.' + report[4]
-    
-    def textToSpeechTheValue(self):
-        text = f"The weight readout is is {self.weight}."
-        subprocess.run(["spd-say", text])
+        
+        return self.weight
         
     def showDebugImages(self):
-        debugImage = Image.open('testbild.png')
-        debugImages = Image.new(mode='RGBA', size=(350, 180*3), color='grey')
-        debugImages.paste(self.transformedImage,(0,0))
-        debugImages.paste(self.redMaskImage,(0, 180))
-        debugImages.paste(debugImage,(0,360))
-        debugImages.show()
-        debugImages.save('debugImages.png')
-        os.remove('testbild.png')
-        os.remove(self.filteredFilename)
+        inputImageSmall = self.inputImage.resize((350,180))
+        ssocrDebugImage = Image.open('testbild.png')
         
-    def getWeight(self):
-        return self.weight
+        debugImages = Image.new(mode='RGB', size=(350*2, 180*2), color='grey')
+        
+        debugImages.paste(inputImageSmall, (0,0))
+        debugImages.paste(self.transformedImage,(350,0))
+        debugImages.paste(self.redMaskImage,(0, 180))
+        debugImages.paste(ssocrDebugImage,(350,350))
+        
+        debugImages.show()
+        
+        debugImageFilePath = self.archiveFolderName + self.timestamp + '_debug' +  self.fileExtension
+        debugImages.save(debugImageFilePath)
+        inputImageFilePath = self.archiveFolderName + self.timestamp + '_original' +  self.fileExtension
+        self.inputImage.save(inputImageFilePath)
+        
+        os.remove('testbild.png')
 
 
 
