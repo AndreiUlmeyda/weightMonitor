@@ -44,7 +44,7 @@ class WeightMonitor:
 
         if self.weight <95 and self.weight > 83:
             influxLine = f"INSERT telemetry weight={self.weight}"
-           # subProcessOutput = subprocess.run(['influx','-database','sensors','-execute', influxLine], stdout=subprocess.PIPE)
+            subProcessOutput = subprocess.run(['influx','-database','sensors','-execute', influxLine], stdout=subprocess.PIPE)
             if subProcessOutput.stderr == None:
                 print(f"a weight reading of {self.weight}kg has been commited to the database.")
             else:

@@ -1,57 +1,81 @@
+
+# This script is meant to provide calibration data.
+# The data represents a tetragonal area of interest specified by the pixel coordinates of its four corners.
+# The script assumes a functional webcam equivalent connected to the computer.
+# On startup, it will take a picture and then allow the user to mark corners using mouse clicks.
+# The first four clicked locations are written to a JSON file when the export button is clicked.
+# The reset button will undo all previous clicks.
+
 from picamera import PiCamera
 from PIL import Image, ImageTk
 import tkinter as tk
 import io
 import json
+from calibrator import Calibrator
+from pprint import pprint
 
-camera = PiCamera()
+CONFIG_FILE_NAME = 'config.json'
+
+ERROR_NO_CAMERA = 'Cannot open webcam'
+NOTIFICATION_CALIBRATION_INCOMPLETE = 'Calibration incomplete, not exporting...'
+NOTIFICATION_CALIBRATION_COMPLETE = f"Calibration successful, data written to {CONFIG_FILE_NAME}"
+
+BUTTON_LABEL_EXPORT = 'Export Config'
+BUTTON_LABEL_RESET_CALIBRATION = 'Reset Calibration'
+
+def takePicture() -> Image:
+    camera = PiCamera()
+    buffer = io.BytesIO()
+    camera.capture(buffer, format='jpeg', resize = (1024, 576))
+    camera.close()
+    buffer.seek(0)
+    image = ImageTk.PhotoImage(Image.open(buffer))
+    return image
+
+def writeConfig() -> None:
+    (calibration, error) = calibrator.getCalibration()
+    if None == error:
+        with open(CONFIG_FILE_NAME, 'w') as file:
+            json.dump(calibration,file, indent = 4)
+        print(NOTIFICATION_CALIBRATION_COMPLETE)
+        window.quit()
+    else:
+        print(NOTIFICATION_CALIBRATION_INCOMPLETE)
+
+def markCorner(event) -> None:
+    calibrator.click(event.x, event.y)
+
+def close(event) -> None:
+    window.quit()
+
+calibrator = Calibrator()
+
 window = tk.Tk()
+exportButton = tk.Button(window, text=BUTTON_LABEL_EXPORT, command=writeConfig)
+resetButton = tk.Button(window, text=BUTTON_LABEL_RESET_CALIBRATION, command=calibrator.reset)
 
-buffer = io.BytesIO()
-camera.capture(buffer, format='jpeg', resize = (1024, 576))
-camera.close()
-buffer.seek(0)
-image = ImageTk.PhotoImage(Image.open(buffer))
-
+image = takePicture()
+#width, height = image.Image.size
+#pprint(vars(image.Image.size))
 width = image.width()
 height = image.height()
 
 canvas = tk.Canvas(
-        window,
-        width = width,
-        height = height)
-
+    window,
+    background='gray75',
+    width = width,
+    height = height)
+    
+# an image position of (0,0) puts the mid point of the image
+# at the upper left corner of the frame
 imagePosition = (width / 2, height / 2)
-canvas.create_image(imagePosition, image = image)
-canvas.pack(fill = tk.BOTH, expand = True)
+canvas.create_image(imagePosition,image=image)
 
-class Corners:
-    cornerIndex = 0
-    corners = [(),(),(),()]
-    def readCorner(self, event):
-        point = (event.x, event.y)
-        self.corners[self.cornerIndex] = point
-        self.cornerIndex += 1
-        self.cornerIndex = self.cornerIndex % 4
-        print(self.corners)
-    def getConfig(self):
-        config = {}
-        config['north-west'] = self.corners[0]
-        config['south-west'] = self.corners[1]
-        config['south-east'] = self.corners[2]
-        config['north-east'] = self.corners[3]
-        return config
+canvas.pack(fill=tk.BOTH, expand=True)
+exportButton.pack(fill=tk.BOTH, expand=True, side=tk.RIGHT)
+resetButton.pack(fill=tk.BOTH, expand=True, side=tk.RIGHT)
 
-corners = Corners()
-
-def exportConfig(event):
-    print("exporting")
-    with open('config.json', 'w') as file:
-        json.dump(corners.getConfig(), file, indent = 4)
-        print("wrote config")
-    window.quit()
-
-canvas.bind('<Button-1>', corners.readCorner)
-window.bind('<Return>', exportConfig)
+canvas.bind('<Button-1>', markCorner)
+window.bind('<Escape>', close)
 
 window.mainloop()

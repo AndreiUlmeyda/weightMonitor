@@ -32,10 +32,10 @@ class ScaleReader:
             config = json.load(file)
         
         print(f'config was:\n {config}')
-        nw = tuple(config['north-west'])
-        sw = tuple(config['south-west'])
-        se = tuple(config['south-east'])
-        ne = tuple(config['north-east'])
+        nw = (config['northwest']['x'], config['northwest']['y'])
+        sw = (config['southwest']['x'], config['southwest']['y'])
+        se = (config['southeast']['x'], config['southeast']['y'])
+        ne = (config['northeast']['x'], config['northeast']['y'])
 
         transformed = self.inputImage.transform(self.inputImage.size, Image.QUAD,
                                         [
