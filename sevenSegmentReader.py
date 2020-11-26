@@ -1,24 +1,34 @@
+# pylint: disable=C0103
+
 """
 
 This module provides the class ScaleReader.
 ScaleReader can be used to read numeric values from an image of a seven
-segment display and write the results to a database.
-
-This operation has 2 prerequisites:
-    1. A sufficiently clear and high contrast image of the display.
-    2. Calibration data specifying pixel values of the four corners of
-       the seven-segment-display-region of the image. This data can relatively easily be
-       obtained using the calibration script inside of the project folder
+segment display.
 
 """
 
-from PIL import Image
-import subprocess
-import os
 from datetime import datetime
 import json
+import os
+import subprocess
+from PIL import Image
 
 class ScaleReader:
+    """
+    The class ScaleReader can be used to read numeric values from an image of a
+    seven segment display.
+
+    This operation has 2 prerequisites:
+        1. A sufficiently clear and high contrast image of the display.
+        2. Calibration data specifying pixel values of the four corners of
+            the seven-segment-display-region of the image. This data can relatively easily be
+            obtained using the calibration script inside of the project folder
+    The code assumes:
+        1. That the numbers in the image have a strong red hue compared to the rest of the image
+        2. That the image shows 3 digits
+
+    """
     weight = 0
     inputImage = None
     transformedImage = None
@@ -28,9 +38,19 @@ class ScaleReader:
     timestamp = None
 
     def __init__(self, image):
+        """
+        The input image is provided through the constructor
+        ! Calibration needs to be done using the same image dimensions !
+        """
         self.inputImage = image
 
     def readWeightFromDisplay(self):
+        """
+        Transform the input image to isolate the display region.
+        Filter for red-ish pixels. Create a mask using those.
+        Perform OCR on the mask.
+
+        """
         self.timestamp = datetime.now().strftime("%Y%m%d%I%M")
 
         # transform to try and restore horizontal and vertical lines
@@ -108,6 +128,9 @@ class ScaleReader:
         return self.weight
 
     def showDebugImages(self):
+        """
+        Show the image at various stages of transformation for debug purposes
+        """
         inputImageSmall = self.inputImage.resize((350, 180))
         ssocrDebugImage = Image.open('testbild.png')
 
