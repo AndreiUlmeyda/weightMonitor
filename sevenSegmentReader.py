@@ -1,5 +1,4 @@
 # pylint: disable=C0103
-
 """
 
 This module provides the class ScaleReader.
@@ -13,6 +12,7 @@ import json
 import os
 import subprocess
 from PIL import Image
+
 
 class ScaleReader:
     """
@@ -63,22 +63,13 @@ class ScaleReader:
         ne = (config['northeast']['x'], config['northeast']['y'])
 
         transformed = self.inputImage.transform(
-            self.inputImage.size,
-            Image.QUAD,
-            [
-                nw[0],
-                nw[1],
-                sw[0],
-                sw[1],
-                se[0],
-                se[1],
-                ne[0],
-                ne[1]
-            ],
+            self.inputImage.size, Image.QUAD,
+            [nw[0], nw[1], sw[0], sw[1], se[0], se[1], ne[0], ne[1]],
             Image.BILINEAR)
         (width, height) = transformed.size
         resizeFactor = 4
-        self.transformedImage = transformed.resize((width // resizeFactor, height // resizeFactor))
+        self.transformedImage = transformed.resize(
+            (width // resizeFactor, height // resizeFactor))
 
         # try to only retain red pixels
         redMask = Image.new('L', (transformed.size[0], transformed.size[1]))
@@ -107,15 +98,15 @@ class ScaleReader:
             [
                 "ssocr",
                 "invert",
-                "-D", # write a debug file to filePath
-                "-T", # use iteratice thresholding
-                "-C", # omit decimal points
-                "-d", # number of digits in the image, see next parameter
-                "-1", # refers to parameter '-d', -1 stands for 'auto'
-                "-c", # select recognized characters, see next parameter
-                "digit", # refers to parameter '-c', only read digits
-                "-t", # specify threshold, see next parameter
-                "25", # refers to parameter '-t', reshold in %
+                "-D",  # write a debug file to filePath
+                "-T",  # use iteratice thresholding
+                "-C",  # omit decimal points
+                "-d",  # number of digits in the image, see next parameter
+                "-1",  # refers to parameter '-d', -1 stands for 'auto'
+                "-c",  # select recognized characters, see next parameter
+                "digit",  # refers to parameter '-c', only read digits
+                "-t",  # specify threshold, see next parameter
+                "25",  # refers to parameter '-t', reshold in %
                 filePath
             ],
             stdout=subprocess.PIPE)
@@ -134,7 +125,9 @@ class ScaleReader:
         inputImageSmall = self.inputImage.resize((350, 180))
         ssocrDebugImage = Image.open('testbild.png')
 
-        debugImages = Image.new(mode='RGB', size=(350*2, 180*2), color='grey')
+        debugImages = Image.new(mode='RGB',
+                                size=(350 * 2, 180 * 2),
+                                color='grey')
 
         debugImages.paste(inputImageSmall, (0, 0))
         debugImages.paste(self.transformedImage, (350, 0))
@@ -143,19 +136,13 @@ class ScaleReader:
 
         debugImages.show()
 
-        debugImageFilePath = (
-            self.archiveFolderName +
-            self.timestamp +
-            '_debug' +
-            self.fileExtension)
+        debugImageFilePath = (self.archiveFolderName + self.timestamp +
+                              '_debug' + self.fileExtension)
 
         debugImages.save(debugImageFilePath)
 
-        inputImageFilePath = (
-            self.archiveFolderName +
-            self.timestamp +
-            '_original' +
-            self.fileExtension)
+        inputImageFilePath = (self.archiveFolderName + self.timestamp +
+                              '_original' + self.fileExtension)
 
         self.inputImage.save(inputImageFilePath)
 
