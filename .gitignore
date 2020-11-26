@@ -3,4 +3,4 @@
 testBed.py
 *.swp
 *cache*
-config.json
+*.json

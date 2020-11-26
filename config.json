@@ -1,18 +1,18 @@
 {
-    "north-west": [
-        317,
-        229
-    ],
-    "south-west": [
-        351,
-        66
-    ],
-    "south-east": [
-        676,
-        56
-    ],
-    "north-east": [
-        664,
-        228
-    ]
+    "northwest": {
+        "x": 515,
+        "y": 254
+    },
+    "southwest": {
+        "x": 545,
+        "y": 68
+    },
+    "southeast": {
+        "x": 201,
+        "y": 41
+    },
+    "northeast": {
+        "x": 124,
+        "y": 196
+    }
 }
