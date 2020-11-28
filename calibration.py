@@ -64,7 +64,7 @@ def markCorner(event) -> None:
     calibrator.click(event.x, event.y)
 
 
-def close(_: tk.Event[Any]) -> None:
+def close(_) -> None:
     """
     Exit the event loop.
     """
