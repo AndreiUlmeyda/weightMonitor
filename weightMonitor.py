@@ -4,12 +4,14 @@
 This module provides a class to transfer measurements from a bathroom scale
 into a database.
 """
-import subprocess
 import io
+import subprocess
 from time import sleep
-import RPi.GPIO as GPIO
-from picamera import PiCamera
-from PIL import Image
+
+import RPi.GPIO as GPIO # type: ignore
+from picamera import PiCamera # type: ignore
+from PIL import Image # type: ignore
+
 from sevenSegmentReader import ScaleReader
 
 
@@ -21,17 +23,17 @@ class WeightMonitor:
     """
     weight = 0
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.setupPins()
 
-    def setupPins(self):
+    def setupPins(self) -> None:
         """
         Only one pin is needed to register a button press.
         """
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(10, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
-    def imageTheScale(self):
+    def imageTheScale(self) -> Image:
         """
         Take a picture of specific size, return it as a PIL.Image
         ! The resolutions when taking pictures for analysis vs taking pictures !
@@ -44,7 +46,7 @@ class WeightMonitor:
         buffer.seek(0)
         return Image.open(buffer)
 
-    def weightFromPictureToDatabase(self):
+    def weightFromPictureToDatabase(self) -> None:
         """
         If the button is pressed at the same time as stepping on the scale, then a 7s delay
         is appropriate, for this specific setup, to sync the image with a stable display on
@@ -88,7 +90,7 @@ class WeightMonitor:
             scaleReader.showDebugImages()
             return
 
-    def pinHighForAnotherWhile(self):
+    def pinHighForAnotherWhile(self) -> bool:
         """
         It needs to be checked that the button state is not transient but
         consistent over multiple measurements during a short while

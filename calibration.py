@@ -14,9 +14,10 @@ The reset button will undo all previous clicks.
 import tkinter as tk
 import io
 import json
-from picamera import PiCamera
-from PIL import Image, ImageTk
+from picamera import PiCamera # type: ignore
+from PIL import Image, ImageTk # type: ignore
 from calibrator import Calibrator
+from typing import Any
 
 CONFIG_FILE_NAME = 'config.json'
 
@@ -56,14 +57,14 @@ def writeConfig() -> None:
         print(NOTIFICATION_CALIBRATION_INCOMPLETE)
 
 
-def markCorner(event) -> None:
+def markCorner(event: tk.Event[Any]) -> None:
     """
     Forward the mouse click location to the calibrator.
     """
     calibrator.click(event.x, event.y)
 
 
-def close(_) -> None:
+def close(_: tk.Event[Any]) -> None:
     """
     Exit the event loop.
     """
@@ -79,8 +80,6 @@ resetButton = tk.Button(window,
                         command=calibrator.reset)
 
 image = takePicture()
-#width, height = image.Image.size
-#pprint(vars(image.Image.size))
 width = image.width()
 height = image.height()
 

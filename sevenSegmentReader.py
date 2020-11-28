@@ -11,7 +11,7 @@ from datetime import datetime
 import json
 import os
 import subprocess
-from PIL import Image
+from PIL import Image # type: ignore
 
 
 class ScaleReader:
@@ -29,22 +29,21 @@ class ScaleReader:
         2. That the image shows 3 digits
 
     """
-    weight = 0
-    inputImage = None
     transformedImage = None
     redMaskImage = None
     archiveFolderName = 'archive/'
     fileExtension = '.jpg'
     timestamp = None
 
-    def __init__(self, image):
+    def __init__(self, image: Image) -> None:
         """
         The input image is provided through the constructor
         ! Calibration needs to be done using the same image dimensions !
         """
         self.inputImage = image
+        self.weight = 0
 
-    def readWeightFromDisplay(self):
+    def readWeightFromDisplay(self) -> float:
         """
         Transform the input image to isolate the display region.
         Filter for red-ish pixels. Create a mask using those.
@@ -118,7 +117,7 @@ class ScaleReader:
 
         return self.weight
 
-    def showDebugImages(self):
+    def showDebugImages(self) -> None:
         """
         Show the image at various stages of transformation for debug purposes
         """
