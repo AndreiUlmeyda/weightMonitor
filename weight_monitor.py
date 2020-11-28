@@ -12,7 +12,7 @@ import RPi.GPIO as GPIO # type: ignore
 from picamera import PiCamera # type: ignore
 from PIL import Image # type: ignore
 
-from sevenSegmentReader import ScaleReader
+from scale_reader import ScaleReader
 
 
 class WeightMonitor:
@@ -21,9 +21,9 @@ class WeightMonitor:
     it and reading the seven segment display when a button is pressed.
     The values are stored using an InfluxDB instance.
     """
-    weight = 0
 
     def __init__(self) -> None:
+        self.weight = 0
         self.setupPins()
 
     def setupPins(self) -> None:
@@ -61,7 +61,7 @@ class WeightMonitor:
 
         # process the image
         scaleReader = ScaleReader(image)
-        readout = scaleReader.readWeightFromDisplay()
+        readout = scaleReader.readWeight()
 
         try:
             self.weight = float(readout)

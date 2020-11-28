@@ -43,7 +43,7 @@ class ScaleReader:
         self.inputImage = image
         self.weight = 0
 
-    def readWeightFromDisplay(self) -> float:
+    def readWeight(self) -> float:
         """
         Transform the input image to isolate the display region.
         Filter for red-ish pixels. Create a mask using those.

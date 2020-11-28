@@ -5,7 +5,7 @@ This module provides a class to record calibration data from pixel coordinates
 supplied by, for instance, user mouse input.
 
 """
-from dataTypes import PixelCoordinate, Calibration, CalibrationResult
+from data_types import PixelCoordinate, Calibration, CalibrationResult
 
 ERROR_NOT_CALIBRATED = "Error: calibration not finished"
 
