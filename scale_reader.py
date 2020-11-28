@@ -13,6 +13,9 @@ import os
 import subprocess
 from PIL import Image # type: ignore
 
+class MissingInputImageError(Exception):
+    pass
+
 
 class ScaleReader:
     """
@@ -40,6 +43,9 @@ class ScaleReader:
         The input image is provided through the constructor
         ! Calibration needs to be done using the same image dimensions !
         """
+        if image is None:
+            raise MissingInputImageError
+
         self.inputImage = image
         self.weight = 0
 
