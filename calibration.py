@@ -57,7 +57,7 @@ def writeConfig() -> None:
         print(NOTIFICATION_CALIBRATION_INCOMPLETE)
 
 
-def markCorner(event: tk.Event[Any]) -> None:
+def markCorner(event) -> None:
     """
     Forward the mouse click location to the calibrator.
     """
