@@ -32,11 +32,6 @@ class ScaleReader:
         2. That the image shows 3 digits
 
     """
-    transformedImage = None
-    redMaskImage = None
-    archiveFolderName = 'archive/'
-    fileExtension = '.jpg'
-    timestamp = None
 
     def __init__(self, image: Image) -> None:
         """
@@ -48,6 +43,11 @@ class ScaleReader:
 
         self.inputImage = image
         self.weight = 0
+        self.transformedImage = None
+        self.redMaskImage = None
+        self.archiveFolderName = 'archive/'
+        self.fileExtension = '.jpg'
+        self.timestamp = None
 
     def readWeight(self) -> float:
         """
@@ -69,7 +69,7 @@ class ScaleReader:
 
         transformed = self.inputImage.transform(
             self.inputImage.size, Image.QUAD,
-            [nw[0], nw[1], sw[0], sw[1], se[0], se[1], ne[0], ne[1]],
+            [config['northwest']['x'], config['northwest']['y'], sw[0], sw[1], se[0], se[1], ne[0], ne[1]],
             Image.BILINEAR)
         (width, height) = transformed.size
         resizeFactor = 4
