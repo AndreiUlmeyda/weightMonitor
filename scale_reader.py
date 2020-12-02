@@ -12,6 +12,7 @@ import json
 import os
 import subprocess
 from PIL import Image # type: ignore
+from config_loader import ConfigLoader
 
 class MissingInputImageError(Exception):
     pass
@@ -59,10 +60,9 @@ class ScaleReader:
         self.timestamp = datetime.now().strftime("%Y%m%d%I%M")
 
         # transform to try and restore horizontal and vertical lines
-        with open('config.json') as file:
-            config = json.load(file)
+        configLoader = ConfigLoader(json)
+        config = configLoader.getConfig()
 
-        nw = (config['northwest']['x'], config['northwest']['y'])
         sw = (config['southwest']['x'], config['southwest']['y'])
         se = (config['southeast']['x'], config['southeast']['y'])
         ne = (config['northeast']['x'], config['northeast']['y'])
