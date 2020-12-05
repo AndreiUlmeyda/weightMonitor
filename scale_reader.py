@@ -17,6 +17,9 @@ from config_loader import ConfigLoader
 class MissingInputImageError(Exception):
     pass
 
+class MissingConfigLoaderError(Exception):
+    pass
+
 
 class ScaleReader:
     """
@@ -34,15 +37,18 @@ class ScaleReader:
 
     """
 
-    def __init__(self, image: Image) -> None:
+    def __init__(self, image: Image, configLoader: ConfigLoader) -> None:
         """
         The input image is provided through the constructor
         ! Calibration needs to be done using the same image dimensions !
         """
         if image is None:
             raise MissingInputImageError
+        if configLoader is None:
+            raise MissingConfigLoaderError
 
         self.inputImage = image
+        self.configLoader = configLoader
         self.weight = 0
         self.transformedImage = None
         self.redMaskImage = None
@@ -60,8 +66,7 @@ class ScaleReader:
         self.timestamp = datetime.now().strftime("%Y%m%d%I%M")
 
         # transform to try and restore horizontal and vertical lines
-        configLoader = ConfigLoader(json)
-        config = configLoader.getConfig()
+        config = self.configLoader.getConfig()
 
         sw = (config['southwest']['x'], config['southwest']['y'])
         se = (config['southeast']['x'], config['southeast']['y'])
