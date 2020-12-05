@@ -19,9 +19,11 @@ class Ocr:
                 "-c",  # select recognized characters, see next parameter
                 "digit",  # refers to parameter '-c', only read digits
                 "-t",  # specify threshold, see next parameter
-                "25",  # refers to parameter '-t', reshold in %
+                "25",  # refers to parameter '-t', threshold in %
                 filePath
             ],
             stdout=subprocess.PIPE)
+
         readout = completed.stdout
-        return (readout, None)
+        error = completed.stderr
+        return (readout, error)
