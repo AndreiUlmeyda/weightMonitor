@@ -11,7 +11,7 @@ class MissingConfigValuesError(Exception):
 class ConfigLoader():
     def __init__(self, jsonParser):
         self.jsonParser = jsonParser
-        self.requiredConfigValues = [
+        self.requiredCornerKeys = [
             'northwest',
             'southwest',
             'southeast',
@@ -23,10 +23,22 @@ class ConfigLoader():
         with open('config.json') as file:
             self.loadedConfig = self.jsonParser.load(file)
 
-    def verifyRequiredConfigValues(self):
-        for requiredKey in self.requiredConfigValues:
+    def verifyEntriesForEachCorner(self):
+        for requiredKey in self.requiredCornerKeys:
             if not requiredKey in self.loadedConfig:
                 raise MissingConfigValuesError
+
+    def verifyCoordinatesForEachCorner(self):
+        for cornerKey in self.requiredCornerKeys:
+            cornerCoordinates = self.loadedConfig[cornerKey]
+            xCoordMissing = not 'x' in cornerCoordinates
+            yCoordMissing = not 'y' in cornerCoordinates
+            if xCoordMissing or yCoordMissing:
+                raise MissingConfigValuesError
+
+    def verifyRequiredConfigValues(self):
+        self.verifyEntriesForEachCorner()
+        self.verifyCoordinatesForEachCorner()        
 
     def getConfig(self):
         self.loadConfigFile()

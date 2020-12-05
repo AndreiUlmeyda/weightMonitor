@@ -38,7 +38,6 @@ class TestConfigLoader(unittest.TestCase):
         ConfigLoader(json)
 
     def testMissingCoordinate(self):
-        self.skipTest('TODO')
         incompleteConfig = self.validConfig
         del incompleteConfig['northwest']['x']
         json.load = MagicMock(return_value=incompleteConfig)
