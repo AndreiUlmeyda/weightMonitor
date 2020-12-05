@@ -68,13 +68,9 @@ class ScaleReader:
         # transform to try and restore horizontal and vertical lines
         config = self.configLoader.getConfig()
 
-        sw = (config['southwest']['x'], config['southwest']['y'])
-        se = (config['southeast']['x'], config['southeast']['y'])
-        ne = (config['northeast']['x'], config['northeast']['y'])
-
         transformed = self.inputImage.transform(
             self.inputImage.size, Image.QUAD,
-            [config['northwest']['x'], config['northwest']['y'], sw[0], sw[1], se[0], se[1], ne[0], ne[1]],
+            [config['northwest']['x'], config['northwest']['y'], config['southwest']['x'], config['southwest']['y'], config['southeast']['x'], config['southeast']['y'], config['northeast']['x'], config['northeast']['y']],
             Image.BILINEAR)
         (width, height) = transformed.size
         resizeFactor = 4
