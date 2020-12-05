@@ -82,35 +82,33 @@ class ScaleReader:
         # Reduce image size for performance reasons
         (width, height) = lcdRegion.size
         resizeFactor = 4
-        self.transformedImage = lcdRegion.resize(
-            (width // resizeFactor, height // resizeFactor))
 
-        # Try to isolate red pixels. Generate an 8bit grayscale image where
-        # higher values mean 'higher ratio of red to other colors'
-        redMask = Image.new('L', (lcdRegion.size[0], lcdRegion.size[1]))
+        smallSize = (width // resizeFactor, height // resizeFactor)
+        smallerImage = lcdRegion.resize(smallSize)
 
-        for ix in range(lcdRegion.size[0]):
-            for iy in range(lcdRegion.size[1]):
+        # Try to isolate red pixels. Generate a 1bit image where
+        # a value of 1 means 'above a certain ratio of red to other colors' and
+        # a value of 0 measns 'below that'
+        redMask = Image.new('1', smallSize)
+
+        for ix in range(smallSize[0]):
+            for iy in range(smallSize[1]):
                 # Get each color channel
-                pixel = lcdRegion.getpixel((ix, iy))
+                pixel = smallerImage.getpixel((ix, iy))
                 red = pixel[0]
                 green = pixel[1]
                 blue = pixel[2]
-                totalIntensity = red + green + blue
-                # Avoid dividing by zero later on
-                    redMask.putpixel((ix, iy), 0)
+
+                redProportion = max(0, (red - green) - blue)
+                # TODO put isolation of red pixels into a separate module
+                # for swapping methods and/or configuring thresholds
+                if redProportion > 10:
+                    redMask.putpixel((ix, iy), 1)
                 else:
-                    redProportion = max(0, (red - green) - blue)
-                    if redProportion > 10:
-                        redMask.putpixel((ix, iy), 255)
-                    else:
-                        redMask.putpixel((ix, iy), 0)
+                    redMask.putpixel((ix, iy), 0)
 
         # Perform OCR on the image
-        (readout, error) = Ocr.read(image=redMask)
-
-        # Remove all points from readout
-        report = ''.join(list(filter(lambda x: x != '.', str(readout))))
+        (readout, _) = Ocr.read(image=redMask)
 
         # Assume the point is at the 3rd position of the readout
         self.weight = report[2:4] + '.' + report[4]
