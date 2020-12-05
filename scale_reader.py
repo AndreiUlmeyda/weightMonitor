@@ -11,11 +11,13 @@ from datetime import datetime
 import json
 import os
 import subprocess
-from PIL import Image # type: ignore
+from PIL import Image  # type: ignore
 from config_loader import ConfigLoader
+
 
 class MissingInputImageError(Exception):
     pass
+
 
 class MissingConfigLoaderError(Exception):
     pass
@@ -36,7 +38,6 @@ class ScaleReader:
         2. That the image shows 3 digits
 
     """
-
     def __init__(self, image: Image, configLoader: ConfigLoader) -> None:
         """
         The input image is provided through the constructor
@@ -69,9 +70,12 @@ class ScaleReader:
         config = self.configLoader.getConfig()
 
         transformed = self.inputImage.transform(
-            self.inputImage.size, Image.QUAD,
-            [config['northwest']['x'], config['northwest']['y'], config['southwest']['x'], config['southwest']['y'], config['southeast']['x'], config['southeast']['y'], config['northeast']['x'], config['northeast']['y']],
-            Image.BILINEAR)
+            self.inputImage.size, Image.QUAD, [
+                config['northwest']['x'], config['northwest']['y'],
+                config['southwest']['x'], config['southwest']['y'],
+                config['southeast']['x'], config['southeast']['y'],
+                config['northeast']['x'], config['northeast']['y']
+            ], Image.BILINEAR)
         (width, height) = transformed.size
         resizeFactor = 4
         self.transformedImage = transformed.resize(

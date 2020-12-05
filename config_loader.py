@@ -5,17 +5,16 @@ This is mainly here for testabilities sake
 
 import json
 
+
 class MissingConfigValuesError(Exception):
     pass
+
 
 class ConfigLoader():
     def __init__(self, jsonParser):
         self.jsonParser = jsonParser
         self.requiredCornerKeys = [
-            'northwest',
-            'southwest',
-            'southeast',
-            'northeast'
+            'northwest', 'southwest', 'southeast', 'northeast'
         ]
         self.loadedConfig = {}
 
@@ -38,10 +37,10 @@ class ConfigLoader():
 
     def verifyRequiredConfigValues(self):
         self.verifyEntriesForEachCorner()
-        self.verifyCoordinatesForEachCorner()        
+        self.verifyCoordinatesForEachCorner()
 
     def getConfig(self):
         self.loadConfigFile()
         self.verifyRequiredConfigValues()
-        
+
         return self.loadConfigFile

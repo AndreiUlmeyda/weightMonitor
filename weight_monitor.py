@@ -8,9 +8,9 @@ import io
 import subprocess
 from time import sleep
 
-import RPi.GPIO as GPIO # type: ignore
-from picamera import PiCamera # type: ignore
-from PIL import Image # type: ignore
+import RPi.GPIO as GPIO  # type: ignore
+from picamera import PiCamera  # type: ignore
+from PIL import Image  # type: ignore
 
 from scale_reader import ScaleReader
 
@@ -21,7 +21,6 @@ class WeightMonitor:
     it and reading the seven segment display when a button is pressed.
     The values are stored using an InfluxDB instance.
     """
-
     def __init__(self) -> None:
         self.weight = 0
         self.setupPins()

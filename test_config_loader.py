@@ -3,6 +3,7 @@ from config_loader import ConfigLoader, MissingConfigValuesError
 import json
 from unittest.mock import MagicMock
 
+
 class TestConfigLoader(unittest.TestCase):
     def setUp(self):
         coordinate = {'x': 2, 'y': 4}
@@ -45,4 +46,3 @@ class TestConfigLoader(unittest.TestCase):
         config_loader = ConfigLoader(json)
 
         self.assertRaises(MissingConfigValuesError, config_loader.getConfig)
-
