@@ -10,9 +10,9 @@ segment display.
 from datetime import datetime
 import json
 import os
-import subprocess
 from PIL import Image  # type: ignore
 from config_loader import ConfigLoader
+from ocr import Ocr
 
 
 class MissingInputImageError(Exception):
@@ -52,7 +52,6 @@ class ScaleReader:
         self.configLoader = configLoader
         self.weight = 0
         self.transformedImage = None
-        self.redMaskImage = None
         self.archiveFolderName = 'archive/'
         self.fileExtension = '.jpg'
         self.timestamp = None
@@ -86,16 +85,19 @@ class ScaleReader:
         self.transformedImage = lcdRegion.resize(
             (width // resizeFactor, height // resizeFactor))
 
-        # Try to only retain red pixels
+        # Try to isolate red pixels. Generate an 8bit grayscale image where
+        # higher values mean 'higher ratio of red to other colors'
         redMask = Image.new('L', (lcdRegion.size[0], lcdRegion.size[1]))
 
         for ix in range(lcdRegion.size[0]):
             for iy in range(lcdRegion.size[1]):
+                # Get each color channel
                 pixel = lcdRegion.getpixel((ix, iy))
                 red = pixel[0]
                 green = pixel[1]
                 blue = pixel[2]
                 totalIntensity = red + green + blue
+                # Avoid dividing by zero later on
                 if totalIntensity == 0:
                     redMask.putpixel((ix, iy), 0)
                 else:
@@ -105,30 +107,13 @@ class ScaleReader:
                     else:
                         redMask.putpixel((ix, iy), 0)
 
-        self.redMaskImage = redMask
-        filePath = 'filtered.jpg'
-        redMask.save(filePath)
+        # Perform OCR on the image
+        (readout, error) = Ocr.read(image=redMask)
 
-        completed = subprocess.run(
-            [
-                "ssocr",
-                "invert",
-                "-D",  # write a debug file to filePath
-                "-T",  # use iteratice thresholding
-                "-C",  # omit decimal points
-                "-d",  # number of digits in the image, see next parameter
-                "-1",  # refers to parameter '-d', -1 stands for 'auto'
-                "-c",  # select recognized characters, see next parameter
-                "digit",  # refers to parameter '-c', only read digits
-                "-t",  # specify threshold, see next parameter
-                "25",  # refers to parameter '-t', reshold in %
-                filePath
-            ],
-            stdout=subprocess.PIPE)
-        readout = completed.stdout
-
+        # Remove all points from readout
         report = ''.join(list(filter(lambda x: x != '.', str(readout))))
 
+        # Assume the point is at the 3rd position of the readout
         self.weight = report[2:4] + '.' + report[4]
 
         return self.weight
