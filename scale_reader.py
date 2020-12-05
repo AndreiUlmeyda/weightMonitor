@@ -98,7 +98,6 @@ class ScaleReader:
                 blue = pixel[2]
                 totalIntensity = red + green + blue
                 # Avoid dividing by zero later on
-                if totalIntensity == 0:
                     redMask.putpixel((ix, iy), 0)
                 else:
                     redProportion = max(0, (red - green) - blue)
@@ -119,31 +118,5 @@ class ScaleReader:
         return self.weight
 
     def showDebugImages(self) -> None:
-        """
-        Show the image at various stages of transformation for debug purposes
-        """
-        inputImageSmall = self.inputImage.resize((350, 180))
-        ssocrDebugImage = Image.open('testbild.png')
-
-        debugImages = Image.new(mode='RGB',
-                                size=(350 * 2, 180 * 2),
-                                color='grey')
-
-        debugImages.paste(inputImageSmall, (0, 0))
-        debugImages.paste(self.transformedImage, (350, 0))
-        debugImages.paste(self.redMaskImage, (0, 180))
-        debugImages.paste(ssocrDebugImage, (350, 350))
-
-        debugImages.show()
-
-        debugImageFilePath = (self.archiveFolderName + self.timestamp +
-                              '_debug' + self.fileExtension)
-
-        debugImages.save(debugImageFilePath)
-
-        inputImageFilePath = (self.archiveFolderName + self.timestamp +
-                              '_original' + self.fileExtension)
-
-        self.inputImage.save(inputImageFilePath)
-
-        os.remove('testbild.png')
+        # TODO redo using tkinter
+        pass
