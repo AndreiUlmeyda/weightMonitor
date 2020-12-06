@@ -50,7 +50,6 @@ class ScaleReader:
 
         self.inputImage = image
         self.configLoader = configLoader
-        self.weight = 0
         self.transformedImage = None
         self.archiveFolderName = 'archive/'
         self.fileExtension = '.jpg'
@@ -111,9 +110,9 @@ class ScaleReader:
         (readout, _) = Ocr.read(image=redMask)
 
         # Assume the point is at the 3rd position of the readout
-        self.weight = readout[2:4] + '.' + readout[4]
+        weight = readout[2:4] + '.' + readout[4]
 
-        return self.weight
+        return weight
 
     def showDebugImages(self) -> None:
         # TODO redo using tkinter
