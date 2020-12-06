@@ -88,21 +88,20 @@ class ScaleReader:
         # a value of 0 measns 'below that'
         redMask = Image.new('1', smallSize)
 
-        for ix in range(smallSize[0]):
-            for iy in range(smallSize[1]):
-                # Get each color channel
-                pixel = smallerImage.getpixel((ix, iy))
+        for x in range(smallSize[0]):
+            for y in range(smallSize[1]):
+
+                pixel = smallerImage.getpixel((x, y))
                 red = pixel[0]
                 green = pixel[1]
                 blue = pixel[2]
 
-                redProportion = max(0, (red - green) - blue)
-                # TODO put isolation of red pixels into a separate module
-                # for swapping methods and/or configuring thresholds
+                redProportion = max(0, (red - (green + blue)))
+
                 if redProportion > 10:
-                    redMask.putpixel((ix, iy), 1)
+                    redMask.putpixel((x, y), 1)
                 else:
-                    redMask.putpixel((ix, iy), 0)
+                    redMask.putpixel((x, y), 0)
 
         # Perform OCR on the image
         (readout, _) = Ocr.read(image=redMask)
