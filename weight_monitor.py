@@ -5,7 +5,6 @@ This module provides a class to transfer measurements from a bathroom scale
 into a database.
 """
 import io
-import subprocess
 from time import sleep
 
 import RPi.GPIO as GPIO  # type: ignore
@@ -13,6 +12,7 @@ from picamera import PiCamera  # type: ignore
 from PIL import Image  # type: ignore
 from config_loader import ConfigLoader
 import json
+from database import Database
 
 from scale_reader import ScaleReader
 
@@ -75,16 +75,13 @@ class WeightMonitor:
             return
 
         if self.weight < 95 and self.weight > 83:
-            influxLine = f"INSERT telemetry weight={self.weight}"
-            subProcessOutput = subprocess.run(
-                ['influx', '-database', 'sensors', '-execute', influxLine],
-                stdout=subprocess.PIPE)
-            if subProcessOutput.stderr is None:
+            error = Database.writeWeight(self.weight)
+            if error is None:
                 print(
                     f"a weight reading of {self.weight}kg has been commited to the database."
                 )
             else:
-                print(subProcessOutput.stderr)
+                print(error)
         else:
             print(f"error: readout '{self.weight}' \
                     is not in the range of assumed values between 83kg and 95kg"
