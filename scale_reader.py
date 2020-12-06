@@ -53,6 +53,7 @@ class ScaleReader:
         self.transformedImage = None
         self.archiveFolderName = 'archive/'
         self.fileExtension = '.jpg'
+        self.resizeFactor = 4
 
     def readWeight(self) -> float:
         """
@@ -78,9 +79,8 @@ class ScaleReader:
 
         # Reduce image size for performance reasons
         (width, height) = lcdRegion.size
-        resizeFactor = 4
 
-        smallSize = (width // resizeFactor, height // resizeFactor)
+        smallSize = (width // self.resizeFactor, height // self.resizeFactor)
         smallerImage = lcdRegion.resize(smallSize)
 
         # Try to isolate red pixels. Generate a 1bit image where
