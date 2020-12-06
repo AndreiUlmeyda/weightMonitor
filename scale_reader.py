@@ -53,7 +53,6 @@ class ScaleReader:
         self.transformedImage = None
         self.archiveFolderName = 'archive/'
         self.fileExtension = '.jpg'
-        self.timestamp = None
 
     def readWeight(self) -> float:
         """
@@ -62,7 +61,6 @@ class ScaleReader:
         Perform OCR on the mask.
 
         """
-        self.timestamp = datetime.now().strftime("%Y%m%d%I%M")
 
         # Transform the image to isolate the region containing the display.
         # The values specifying the four corners of the display are read from
