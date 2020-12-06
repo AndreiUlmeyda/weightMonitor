@@ -11,6 +11,8 @@ from time import sleep
 import RPi.GPIO as GPIO  # type: ignore
 from picamera import PiCamera  # type: ignore
 from PIL import Image  # type: ignore
+from config_loader import ConfigLoader
+import json
 
 from scale_reader import ScaleReader
 
@@ -59,7 +61,8 @@ class WeightMonitor:
         image = self.imageTheScale()
 
         # process the image
-        scaleReader = ScaleReader(image)
+        configLoader = ConfigLoader(json)
+        scaleReader = ScaleReader(image, configLoader)
         readout = scaleReader.readWeight()
 
         try:
