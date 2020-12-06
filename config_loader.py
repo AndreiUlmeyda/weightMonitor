@@ -43,4 +43,4 @@ class ConfigLoader():
         self.loadConfigFile()
         self.verifyRequiredConfigValues()
 
-        return self.loadConfigFile
+        return self.loadedConfig

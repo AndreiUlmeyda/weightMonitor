@@ -105,6 +105,7 @@ class ScaleReader:
 
         # Perform OCR on the image
         (readout, _) = Ocr.read(image=redMask)
+        readout = str(readout)
 
         # Assume the point is at the 3rd position of the readout
         weight = readout[2:4] + '.' + readout[4]
