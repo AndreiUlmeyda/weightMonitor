@@ -17,7 +17,6 @@ import json
 from picamera import PiCamera  # type: ignore
 from PIL import Image, ImageTk  # type: ignore
 from calibrator import Calibrator
-from typing import Any
 
 CONFIG_FILE_NAME = 'config.json'
 
