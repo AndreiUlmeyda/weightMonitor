@@ -13,6 +13,8 @@ from PIL import Image  # type: ignore
 from config_loader import ConfigLoader
 import json
 from database import Database
+from pydub import AudioSegment
+from pydub.playback import play
 
 from scale_reader import ScaleReader
 
@@ -26,6 +28,9 @@ class WeightMonitor:
     def __init__(self) -> None:
         self.weight = 0
         self.setupPins()
+        self.sound_start = AudioSegment.from_wav("start.wav")
+        self.sound_success = AudioSegment.from_wav("success.wav")
+        self.sound_error = AudioSegment.from_wav("error.wav")
 
     def setupPins(self) -> None:
         """
@@ -71,6 +76,7 @@ class WeightMonitor:
             print(
                 f"error: readout '{readout}' cannot be interpreted as a number."
             )
+            play(self.sound_error)
             scaleReader.showDebugImages()
             return
 
@@ -80,12 +86,15 @@ class WeightMonitor:
                 print(
                     f"a weight reading of {self.weight}kg has been commited to the database."
                 )
+                play(self.sound_success)
             else:
                 print(error)
+                play(self.sound_error)
         else:
             print(f"error: readout '{self.weight}' \
                     is not in the range of assumed values between 83kg and 95kg"
                   )
+            play(self.sound_error)
             scaleReader.showDebugImages()
             return
 
@@ -108,6 +117,7 @@ class WeightMonitor:
         """
         if self.pinHighForAnotherWhile():
             print("reading...")
+            play(self.sound_start)
             action()
             self.waitForButtonPressThenDo(action)
 
