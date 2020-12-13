@@ -1,9 +1,7 @@
+# pylint: disable=C0103,W0105,C0115,C0116
 """
 Small module to load config values from a file.
-This is mainly here for testabilities sake
 """
-
-import json
 
 
 class MissingConfigValuesError(Exception):
@@ -11,6 +9,11 @@ class MissingConfigValuesError(Exception):
 
 
 class ConfigLoader():
+    """
+    Provide functionality to load config values
+    from a file and assure that all required
+    keys are present
+    """
     def __init__(self, jsonParser):
         self.jsonParser = jsonParser
         self.requiredCornerKeys = [
