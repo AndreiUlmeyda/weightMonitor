@@ -15,6 +15,7 @@ import json
 from database import Database
 from pydub import AudioSegment
 from pydub.playback import play
+import sys
 
 from scale_reader import ScaleReader
 
@@ -25,7 +26,8 @@ class WeightMonitor:
     it and reading the seven segment display when a button is pressed.
     The values are stored using an InfluxDB instance.
     """
-    def __init__(self) -> None:
+    def __init__(self, dry_run=False) -> None:
+        self.dry_run = dry_run
         self.weight = 0
         self.setupPins()
         self.sound_start = AudioSegment.from_wav("start.wav")
@@ -80,8 +82,13 @@ class WeightMonitor:
             scaleReader.showDebugImages()
             return
 
+        if self.dry_run:
+            print(f"dry run: readout was {self.weight}")
+            return
+
         if self.weight < 95 and self.weight > 83:
             error = Database.writeWeight(self.weight)
+
             if error is None:
                 print(
                     f"a weight reading of {self.weight}kg has been commited to the database."
@@ -137,6 +144,6 @@ class WeightMonitor:
         """
         self.waitForButtonPressThenDo(self.weightFromPictureToDatabase)
 
-
-monitor = WeightMonitor()
+dry_run = "-d" in sys.argv or "--dry-run" in sys.argv
+monitor = WeightMonitor(dry_run=dry_run)
 monitor.weightToDatabaseOnButtonPress()
