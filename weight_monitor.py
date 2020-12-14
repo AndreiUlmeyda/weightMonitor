@@ -30,9 +30,9 @@ class WeightMonitor:
         self.dry_run = dry_run
         self.weight = 0
         self.setupPins()
-        self.sound_start = AudioSegment.from_wav("start.wav")
-        self.sound_success = AudioSegment.from_wav("success.wav")
-        self.sound_error = AudioSegment.from_wav("error.wav")
+        self.sound_start = AudioSegment.from_mp3("start.mp3") + 25
+        self.sound_success = AudioSegment.from_mp3("success.mp3")
+        self.sound_error = AudioSegment.from_mp3("error.mp3") -10
 
     def setupPins(self) -> None:
         """
