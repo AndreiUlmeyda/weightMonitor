@@ -1,7 +1,7 @@
-*.jpg
+config.json
+*.mp3
 *.png
-testBed.py
+*.jpg
 *.swp
 *cache*
-*.json
 *vscode*
