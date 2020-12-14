@@ -61,6 +61,9 @@ class WeightMonitor:
         the scale. Sanity checks are performed, it is assumed that the result of the OCR
         represents a numerical value between 83 and 95 (kg).
         """
+
+        if self.dry_run:
+            print("!This is a dry run, nothing will be commited to database!")
         # when hitting the button right when stepping on the scale, the delay
         # of 7 seconds roughly matches the time the camera operates with
         # the time the scale displays the final reading
@@ -82,12 +85,10 @@ class WeightMonitor:
             scaleReader.showDebugImages()
             return
 
-        if self.dry_run:
-            print(f"dry run: readout was {self.weight}")
-            return
-
         if self.weight < 95 and self.weight > 83:
-            error = Database.writeWeight(self.weight)
+            error = None
+            if not self.dry_run:
+                error = Database.writeWeight(self.weight)
 
             if error is None:
                 print(
