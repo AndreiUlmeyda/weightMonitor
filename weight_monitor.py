@@ -16,7 +16,7 @@ from database import Database
 from pydub import AudioSegment
 from pydub.playback import play
 import sys
-
+import threading
 from scale_reader import ScaleReader
 
 
@@ -31,6 +31,7 @@ class WeightMonitor:
         self.weight = 0
         self.setupPins()
         self.sound_start = AudioSegment.from_mp3("start.mp3") + 25
+        self.sound_in_progress = AudioSegment.from_mp3("in_progress.mp3")
         self.sound_success = AudioSegment.from_mp3("success.mp3")
         self.sound_error = AudioSegment.from_mp3("error.mp3") -10
 
@@ -126,7 +127,11 @@ class WeightMonitor:
         if self.pinHighForAnotherWhile():
             print("reading...")
             play(self.sound_start)
-            action()
+            threadAction = threading.Thread(target=action)
+            threadSoundInProgress = threading.Thread(target=play, args=(self.sound_in_progress))
+            threadAction.start()
+            threadSoundInProgress.start()
+            threadAction.join()
             self.waitForButtonPressThenDo(action)
 
     def waitForButtonPressThenDo(self, action):
