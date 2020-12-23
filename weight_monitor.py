@@ -131,7 +131,7 @@ class WeightMonitor:
             print("reading...")
             play(self.sound_start)
             threadAction = threading.Thread(target=action)
-            threadSoundInProgress = threading.Thread(target=playInProgressSound)
+            threadSoundInProgress = threading.Thread(target=self.playInProgressSound)
             threadAction.start()
             threadSoundInProgress.start()
             threadAction.join()
