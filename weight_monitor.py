@@ -55,6 +55,9 @@ class WeightMonitor:
         buffer.seek(0)
         return Image.open(buffer)
 
+    def playInProgressSound(self):
+        play(self.in_progress)
+
     def weightFromPictureToDatabase(self) -> None:
         """
         If the button is pressed at the same time as stepping on the scale, then a 7s delay
@@ -128,7 +131,7 @@ class WeightMonitor:
             print("reading...")
             play(self.sound_start)
             threadAction = threading.Thread(target=action)
-            threadSoundInProgress = threading.Thread(target=play, args=(self.sound_in_progress))
+            threadSoundInProgress = threading.Thread(target=playInProgressSound)
             threadAction.start()
             threadSoundInProgress.start()
             threadAction.join()
