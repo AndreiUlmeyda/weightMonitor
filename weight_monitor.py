@@ -56,7 +56,7 @@ class WeightMonitor:
         return Image.open(buffer)
 
     def playInProgressSound(self):
-        play(self.in_progress)
+        play(self.sound_in_progress)
 
     def weightFromPictureToDatabase(self) -> None:
         """
