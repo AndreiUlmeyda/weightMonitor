@@ -33,7 +33,7 @@ class WeightMonitor:
         self.sound_start = AudioSegment.from_mp3("start.mp3") + 25
         self.sound_in_progress = AudioSegment.from_mp3("in_progress.mp3")
         self.sound_success = AudioSegment.from_mp3("success.mp3")
-        self.sound_error = AudioSegment.from_mp3("error.mp3") -10
+        self.sound_error = AudioSegment.from_mp3("error.mp3") - 10
 
     def setupPins(self) -> None:
         """
@@ -132,7 +132,8 @@ class WeightMonitor:
             print("reading...")
             play(self.sound_start)
             threadAction = threading.Thread(target=action)
-            threadSoundInProgress = threading.Thread(target=self.playInProgressSound)
+            threadSoundInProgress = threading.Thread(
+                target=self.playInProgressSound)
             threadAction.start()
             threadSoundInProgress.start()
             threadAction.join()
@@ -153,6 +154,7 @@ class WeightMonitor:
         Wait for a button press, then take a picture, read a value from it and commit it to database
         """
         self.waitForButtonPressThenDo(self.weightFromPictureToDatabase)
+
 
 dry_run = "-d" in sys.argv or "--dry-run" in sys.argv
 monitor = WeightMonitor(dry_run=dry_run)
