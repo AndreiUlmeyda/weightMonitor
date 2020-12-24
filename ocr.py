@@ -12,7 +12,7 @@ class Ocr:
                 "ssocr",
                 "invert",
                 "-D",  # write a debug file to current directory
-                "-T",  # use iteratice thresholding
+                "-T",  # use iterative thresholding
                 "-C",  # omit decimal points
                 "-d",  # number of digits in the image, see next parameter
                 "-1",  # refers to parameter '-d', -1 stands for 'auto'

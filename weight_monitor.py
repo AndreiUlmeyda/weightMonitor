@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 # pylint: disable=C0103,E1101
 """
-This module provides a class to transfer measurements from a bathroom scale
-into a database.
+This module provides a class to transfer measurements from
+a bathroom scale to a database.
 """
 import io
 from time import sleep
@@ -22,7 +22,7 @@ from scale_reader import ScaleReader
 
 class WeightMonitor:
     """
-    Use a PiCamera to read values of a bathroom scale by taking a picture of
+    Use a PiCamera to read values off of a bathroom scale by taking a picture of
     it and reading the seven segment display when a button is pressed.
     The values are stored using an InfluxDB instance.
     """

@@ -7,9 +7,6 @@ class TestCalibration(unittest.TestCase):
     def setUp(self) -> None:
         self.calibrator = Calibrator()
 
-    def testInstantiation(self) -> None:
-        self.assertIsInstance(self.calibrator, Calibrator)
-
     def testUncalibratedWithoutActions(self) -> None:
         (_, error) = self.calibrator.getCalibration()
 
