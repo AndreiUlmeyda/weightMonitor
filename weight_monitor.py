@@ -11,10 +11,10 @@ import RPi.GPIO as GPIO  # type: ignore
 from picamera import PiCamera  # type: ignore
 from PIL import Image  # type: ignore
 from config_loader import ConfigLoader
+from audio_feedback import AudioFeedback
 import json
 from database import Database
-from pydub import AudioSegment
-from pydub.playback import play
+
 import sys
 import threading
 from scale_reader import ScaleReader
@@ -30,10 +30,7 @@ class WeightMonitor:
         self.dry_run = dry_run
         self.weight = 0
         self.setupPins()
-        self.sound_start = AudioSegment.from_mp3("start.mp3") + 25
-        self.sound_in_progress = AudioSegment.from_mp3("in_progress.mp3")
-        self.sound_success = AudioSegment.from_mp3("success.mp3")
-        self.sound_error = AudioSegment.from_mp3("error.mp3") - 10
+        self.audio = AudioFeedback()
 
     def setupPins(self) -> None:
         """
@@ -54,10 +51,6 @@ class WeightMonitor:
         camera.close()
         buffer.seek(0)
         return Image.open(buffer)
-
-    def playInProgressSound(self):
-        sleep(1)
-        play(self.sound_in_progress)
 
     def weightFromPictureToDatabase(self) -> None:
         """
@@ -86,7 +79,7 @@ class WeightMonitor:
             print(
                 f"error: readout '{readout}' cannot be interpreted as a number."
             )
-            play(self.sound_error)
+            self.audio.error()
             scaleReader.showDebugImages()
             return
 
@@ -99,15 +92,15 @@ class WeightMonitor:
                 print(
                     f"a weight reading of {self.weight}kg has been commited to the database."
                 )
-                play(self.sound_success)
+                self.audio.success()
             else:
                 print(error)
-                play(self.sound_error)
+                self.audio.error()
         else:
             print(f"error: readout '{self.weight}' \
                     is not in the range of assumed values between 83kg and 95kg"
                   )
-            play(self.sound_error)
+            self.audio.error()
             scaleReader.showDebugImages()
             return
 
@@ -130,10 +123,10 @@ class WeightMonitor:
         """
         if self.pinHighForAnotherWhile():
             print("reading...")
-            play(self.sound_start)
+            self.audio.start()
             threadAction = threading.Thread(target=action)
             threadSoundInProgress = threading.Thread(
-                target=self.playInProgressSound)
+                target=self.audio.in_progress)
             threadAction.start()
             threadSoundInProgress.start()
             threadAction.join()
