@@ -4,16 +4,14 @@
 This module provides a class to transfer measurements from
 a bathroom scale to a database.
 """
-import io
 from time import sleep
 
-import RPi.GPIO as GPIO  # type: ignore
-from picamera import PiCamera  # type: ignore
-from PIL import Image  # type: ignore
+from PIL import Image
 from config_loader import ConfigLoader
 from audio_feedback import AudioFeedback
 import json
 from database import Database
+from raspberry_factory import RaspberryFactory
 
 import sys
 import threading
@@ -31,26 +29,7 @@ class WeightMonitor:
         self.weight = 0
         self.setupPins()
         self.audio = AudioFeedback()
-
-    def setupPins(self) -> None:
-        """
-        Only one pin is needed to register a button press.
-        """
-        GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(10, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-
-    def imageTheScale(self) -> Image:
-        """
-        Take a picture of specific size, return it as a PIL.Image
-        ! The resolutions when taking pictures for analysis vs taking pictures !
-        ! for calibration need to match.                                       !
-        """
-        camera = PiCamera()
-        buffer = io.BytesIO()
-        camera.capture(buffer, format='jpeg', resize=(1024, 576))
-        camera.close()
-        buffer.seek(0)
-        return Image.open(buffer)
+        self.rpi = RaspberryFactory().new()
 
     def weightFromPictureToDatabase(self) -> None:
         """
@@ -66,7 +45,7 @@ class WeightMonitor:
         # of 7 seconds roughly matches the time the camera operates with
         # the time the scale displays the final reading
         sleep(7)
-        image = self.imageTheScale()
+        image = self.rpi.take_picture()
 
         # process the image
         configLoader = ConfigLoader(json)
@@ -109,9 +88,9 @@ class WeightMonitor:
         It needs to be checked that the button state is not transient but
         consistent over multiple measurements during a short while
         """
-        state = GPIO.input(10)
+        state = self.rpi.read_pin()
         for _ in range(5):
-            state = state and GPIO.input(10)
+            state = state and self.rpi.read_pin()
             sleep(0.001)
         return state
 
@@ -138,7 +117,7 @@ class WeightMonitor:
         """
         print("ready to read weight...")
         while True:
-            if GPIO.input(10):
+            if self.rpi.read_pin():
                 self.confirmButtonPressThenDo(action)
             sleep(0.1)
 
