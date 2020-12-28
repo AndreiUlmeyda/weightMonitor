@@ -24,12 +24,22 @@ class WeightMonitor:
     it and reading the seven segment display when a button is pressed.
     The values are stored using an InfluxDB instance.
     """
-    def __init__(self, dry_run=False) -> None:
+    def __init__(self,
+                 scale_reader,
+                 audio_feedback,
+                 database,
+                 raspberry,
+                 config_loader,
+                 delay=0,
+                 dry_run=False) -> None:
         self.dry_run = dry_run
         self.weight = 0
-        self.setupPins()
-        self.audio = AudioFeedback()
-        self.rpi = RaspberryFactory().new()
+        self.audio = audio_feedback
+        self.scale_reader = scale_reader
+        self.db = database
+        self.rpi = raspberry
+        self.config_loader = config_loader
+        self.delay = delay
 
     def weightFromPictureToDatabase(self) -> None:
         """
@@ -44,13 +54,11 @@ class WeightMonitor:
         # when hitting the button right when stepping on the scale, the delay
         # of 7 seconds roughly matches the time the camera operates with
         # the time the scale displays the final reading
-        sleep(7)
+        sleep(self.delay)
         image = self.rpi.take_picture()
 
         # process the image
-        configLoader = ConfigLoader(json)
-        scaleReader = ScaleReader(image, configLoader)
-        readout = scaleReader.readWeight()
+        readout = self.scale_reader.readWeight()
 
         try:
             self.weight = float(readout)
@@ -59,13 +67,13 @@ class WeightMonitor:
                 f"error: readout '{readout}' cannot be interpreted as a number."
             )
             self.audio.error()
-            scaleReader.showDebugImages()
+            self.scale_reader.showDebugImages()
             return
 
         if self.weight < 95 and self.weight > 83:
             error = None
             if not self.dry_run:
-                error = Database.writeWeight(self.weight)
+                error = self.db.writeWeight(self.weight)
 
             if error is None:
                 print(
@@ -77,57 +85,16 @@ class WeightMonitor:
                 self.audio.error()
         else:
             print(f"error: readout '{self.weight}' \
-                    is not in the range of assumed values between 83kg and 95kg"
-                  )
+is not in the range of assumed values between 83kg and 95kg")
             self.audio.error()
-            scaleReader.showDebugImages()
+            self.scale_reader.showDebugImages()
             return
 
-    def pinHighForAnotherWhile(self) -> bool:
-        """
-        It needs to be checked that the button state is not transient but
-        consistent over multiple measurements during a short while
-        """
-        state = self.rpi.read_pin()
-        for _ in range(5):
-            state = state and self.rpi.read_pin()
-            sleep(0.001)
-        return state
-
-    def confirmButtonPressThenDo(self, action):
-        """
-        A button HIGH state on the button pin can happen randomly.
-        It needs to be confirmed that the state is consistent over a short while
-        to be sure of a user action.
-        """
-        if self.pinHighForAnotherWhile():
-            print("reading...")
-            self.audio.start()
-            threadAction = threading.Thread(target=action)
-            threadSoundInProgress = threading.Thread(
-                target=self.audio.in_progress)
-            threadAction.start()
-            threadSoundInProgress.start()
-            threadAction.join()
-            self.waitForButtonPressThenDo(action)
-
-    def waitForButtonPressThenDo(self, action):
-        """
-        The action should only be executed on button press
-        """
-        print("ready to read weight...")
-        while True:
-            if self.rpi.read_pin():
-                self.confirmButtonPressThenDo(action)
-            sleep(0.1)
-
-    def weightToDatabaseOnButtonPress(self):
-        """
-        Wait for a button press, then take a picture, read a value from it and commit it to database
-        """
-        self.waitForButtonPressThenDo(self.weightFromPictureToDatabase)
+    def run(self):
+        self.rpi.on_button_press(self.db.weightFromPictureToDatabase)
 
 
-dry_run = "-d" in sys.argv or "--dry-run" in sys.argv
-monitor = WeightMonitor(dry_run=dry_run)
-monitor.weightToDatabaseOnButtonPress()
+if __name__ == "__main__":
+    dry_run = "-d" in sys.argv or "--dry-run" in sys.argv
+    monitor = WeightMonitor(dry_run=dry_run)
+    monitor.run()

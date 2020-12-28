@@ -2,7 +2,6 @@ import subprocess
 
 
 class Database():
-    @staticmethod
     def writeWeight(weight):
         influxLine = f"INSERT telemetry weight={weight}"
 
