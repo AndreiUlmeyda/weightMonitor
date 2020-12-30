@@ -1,13 +1,16 @@
 from scale_reader import ScaleReader
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 from weight_monitor import WeightMonitor
+from scale_reader import ScaleReader
 
 
 class TestWeightMonitor(unittest.TestCase):
-    def setUp(self) -> None:
+    @patch('scale_reader.ScaleReader')
+    def setUp(self, ScaleReaderMock) -> None:
         audio_feedback = MagicMock()
-        ocr = MagicMock()
+        ocr = ScaleReaderMock()
+        ocr.readWeight.return_value = 3
         database = MagicMock()
         raspberry = MagicMock()
         config_loader = MagicMock()  # ConfigLoader(json)

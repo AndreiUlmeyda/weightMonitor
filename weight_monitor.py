@@ -58,7 +58,7 @@ class WeightMonitor:
         image = self.rpi.take_picture()
 
         # process the image
-        readout = self.scale_reader.readWeight()
+        readout = self.scale_reader.readWeight(image)
 
         try:
             self.weight = float(readout)

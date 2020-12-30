@@ -38,24 +38,23 @@ class ScaleReader:
         2. That the image shows 3 digits
 
     """
-    def __init__(self, image: Image, configLoader: ConfigLoader) -> None:
+    def __init__(self, configLoader: ConfigLoader) -> None:
         """
         The input image is provided through the constructor
         ! Calibration needs to be done using the same image dimensions !
         """
-        if image is None:
-            raise MissingInputImageError
         if configLoader is None:
             raise MissingConfigLoaderError
 
-        self.inputImage = image
         self.configLoader = configLoader
         self.transformedImage = None
         self.archiveFolderName = 'archive/'
         self.fileExtension = '.jpg'
         self.resizeFactor = 4
 
-    def readWeight(self) -> float:
+    def readWeight(self, image: Image) -> float:
+        if image is None:
+            raise MissingInputImageError
         """
         Transform the input image to isolate the display region.
         Filter for red-ish pixels. Create a mask using those.
@@ -69,13 +68,12 @@ class ScaleReader:
 
         config = self.configLoader.getConfig()
 
-        lcdRegion = self.inputImage.transform(
-            self.inputImage.size, Image.QUAD, [
-                config['northwest']['x'], config['northwest']['y'],
-                config['southwest']['x'], config['southwest']['y'],
-                config['southeast']['x'], config['southeast']['y'],
-                config['northeast']['x'], config['northeast']['y']
-            ], Image.BILINEAR)
+        lcdRegion = image.transform(image, Image.QUAD, [
+            config['northwest']['x'], config['northwest']['y'],
+            config['southwest']['x'], config['southwest']['y'],
+            config['southeast']['x'], config['southeast']['y'],
+            config['northeast']['x'], config['northeast']['y']
+        ], Image.BILINEAR)
 
         # Reduce image size for performance reasons
         (width, height) = lcdRegion.size
