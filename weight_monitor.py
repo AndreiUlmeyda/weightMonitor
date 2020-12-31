@@ -16,6 +16,7 @@ from raspberry_factory import RaspberryFactory
 import sys
 import threading
 from scale_reader import ScaleReader
+import logging
 
 
 class WeightMonitor:
@@ -50,7 +51,8 @@ class WeightMonitor:
         """
 
         if self.dry_run:
-            print("!This is a dry run, nothing will be commited to database!")
+            logging.info(
+                "!This is a dry run, nothing will be commited to database!")
         # when hitting the button right when stepping on the scale, the delay
         # of 7 seconds roughly matches the time the camera operates with
         # the time the scale displays the final reading
@@ -63,7 +65,7 @@ class WeightMonitor:
         try:
             self.weight = float(readout)
         except ValueError:
-            print(
+            logging.info(
                 f"error: readout '{readout}' cannot be interpreted as a number."
             )
             self.audio.error()
@@ -76,15 +78,15 @@ class WeightMonitor:
                 error = self.db.writeWeight(self.weight)
 
             if error is None:
-                print(
+                logging.info(
                     f"a weight reading of {self.weight}kg has been commited to the database."
                 )
                 self.audio.success()
             else:
-                print(error)
+                logging.info(error)
                 self.audio.error()
         else:
-            print(f"error: readout '{self.weight}' \
+            logging.info(f"error: readout '{self.weight}' \
 is not in the range of assumed values between 83kg and 95kg")
             self.audio.error()
             self.scale_reader.showDebugImages()
