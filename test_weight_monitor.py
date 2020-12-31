@@ -13,6 +13,7 @@ class TestWeightMonitor(unittest.TestCase):
         self.database = MagicMock()
         self.raspberry = MagicMock()
         self.config_loader = MagicMock()
+        self.dry_run = False
         self.buildMonitor()
 
     def buildMonitor(self):
@@ -21,7 +22,7 @@ class TestWeightMonitor(unittest.TestCase):
                                      database=self.database,
                                      raspberry=self.raspberry,
                                      config_loader=self.config_loader,
-                                     dry_run=False)
+                                     dry_run=self.dry_run)
 
     def testWritePlausibleWeightsToDatabase(self):
         plausibleWeight = 90
@@ -35,6 +36,16 @@ class TestWeightMonitor(unittest.TestCase):
     def testIgnoreImplausibleWeights(self):
         implausibleWeight = 3
         self.ocr.readWeight.return_value = implausibleWeight
+        self.buildMonitor()
+
+        self.monitor.weightFromPictureToDatabase()
+
+        self.database.writeWeight.assert_not_called()
+
+    def testIgnorePlausibleWeightsOnDryRuns(self):
+        plausibleWeight = 90
+        self.ocr.readWeight.return_value = plausibleWeight
+        self.dry_run = True
         self.buildMonitor()
 
         self.monitor.weightFromPictureToDatabase()
