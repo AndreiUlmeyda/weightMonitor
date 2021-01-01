@@ -66,3 +66,12 @@ class TestWeightMonitor(unittest.TestCase):
         self.monitor.weightFromPictureToDatabase()
 
         self.audio_feedback.start.assert_called_once()
+
+    def testUninterpretableReadout(self):
+        self.ocr.readWeight.return_value = '?'
+        self.buildMonitor()
+
+        self.monitor.weightFromPictureToDatabase()
+
+        self.database.writeWeight.assert_not_called()
+        self.audio_feedback.error.assert_called_once()
