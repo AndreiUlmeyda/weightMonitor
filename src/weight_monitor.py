@@ -6,25 +6,12 @@ a bathroom scale to a database.
 """
 from time import sleep
 
-from PIL import Image
-from src.config_loader import ConfigLoader
-from src.audio_feedback import AudioFeedback
-import json
-from src.database import Database
-from src.raspberry_factory import RaspberryFactory
-
 import sys
 import threading
-from src.scale_reader import ScaleReader
 import logging
 
 
 class WeightMonitor:
-    """
-    Use a PiCamera to read values off of a bathroom scale by taking a picture of
-    it and reading the seven segment display when a button is pressed.
-    The values are stored using an InfluxDB instance.
-    """
     def __init__(self,
                  scale_reader,
                  audio_feedback,
@@ -43,12 +30,6 @@ class WeightMonitor:
         self.delay = delay
 
     def weightFromPictureToDatabase(self) -> None:
-        """
-        If the button is pressed at the same time as stepping on the scale, then a 7s delay
-        is appropriate, for this specific setup, to sync the image with a stable display on
-        the scale. Sanity checks are performed, it is assumed that the result of the OCR
-        represents a numerical value between 83 and 95 (kg).
-        """
 
         self.audio.start()
 
