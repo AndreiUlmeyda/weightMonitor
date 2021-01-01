@@ -36,7 +36,10 @@ class TestConfigLoader(unittest.TestCase):
 
     def testNoErrorWithCompleteConfig(self):
         json.load = MagicMock(return_value=self.validConfig)
-        ConfigLoader(json)
+
+        config_loader = ConfigLoader(json)
+
+        self.assertEqual(config_loader.getConfig(), self.validConfig)
 
     def testMissingCoordinate(self):
         incompleteConfig = self.validConfig

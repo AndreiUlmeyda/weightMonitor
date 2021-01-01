@@ -23,7 +23,7 @@ class TestWeightMonitor(unittest.TestCase):
                                      config_loader=self.config_loader,
                                      dry_run=self.dry_run)
 
-    def testWritePlausibleWeightsToDatabase(self):
+    def testWritePlausibleWeightToDatabase(self):
         plausibleWeight = 90
         self.ocr.readWeight.return_value = plausibleWeight
         self.buildMonitor()
@@ -32,7 +32,7 @@ class TestWeightMonitor(unittest.TestCase):
 
         self.database.writeWeight.assert_called_once_with(plausibleWeight)
 
-    def testIgnoreImplausibleWeights(self):
+    def testIgnoreImplausibleWeight(self):
         implausibleWeight = 3
         self.ocr.readWeight.return_value = implausibleWeight
         self.buildMonitor()
@@ -41,7 +41,16 @@ class TestWeightMonitor(unittest.TestCase):
 
         self.database.writeWeight.assert_not_called()
 
-    def testIgnorePlausibleWeightsOnDryRuns(self):
+    def testImplausibleWeightErrorSound(self):
+        implausibleWeight = 3
+        self.ocr.readWeight.return_value = implausibleWeight
+        self.buildMonitor()
+
+        self.monitor.weightFromPictureToDatabase()
+
+        self.audio_feedback.error.assert_called_once()
+
+    def testIgnorePlausibleWeightOnDryRuns(self):
         plausibleWeight = 90
         self.ocr.readWeight.return_value = plausibleWeight
         self.dry_run = True
