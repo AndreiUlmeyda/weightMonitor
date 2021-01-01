@@ -1,4 +1,4 @@
-from raspberry_interface import RaspberryInterface
+from src.raspberry_interface import RaspberryInterface
 from PIL import Image
 
 

@@ -7,15 +7,15 @@ a bathroom scale to a database.
 from time import sleep
 
 from PIL import Image
-from config_loader import ConfigLoader
-from audio_feedback import AudioFeedback
+from src.config_loader import ConfigLoader
+from src.audio_feedback import AudioFeedback
 import json
-from database import Database
-from raspberry_factory import RaspberryFactory
+from src.database import Database
+from src.raspberry_factory import RaspberryFactory
 
 import sys
 import threading
-from scale_reader import ScaleReader
+from src.scale_reader import ScaleReader
 import logging
 
 
@@ -49,6 +49,8 @@ class WeightMonitor:
         the scale. Sanity checks are performed, it is assumed that the result of the OCR
         represents a numerical value between 83 and 95 (kg).
         """
+
+        self.audio.start()
 
         if self.dry_run:
             logging.info(

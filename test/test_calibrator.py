@@ -1,6 +1,6 @@
 # pylint: disable=C0103,C0111
 import unittest
-from calibrator import Calibrator
+from src.calibrator import Calibrator
 
 
 class TestCalibration(unittest.TestCase):

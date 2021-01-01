@@ -1,5 +1,5 @@
 import unittest
-from config_loader import ConfigLoader, MissingConfigValuesError
+from src.config_loader import ConfigLoader, MissingConfigValuesError
 import json
 from unittest.mock import MagicMock
 

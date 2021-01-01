@@ -1,4 +1,4 @@
-from raspberry_interface import RaspberryInterface
+from src.raspberry_interface import RaspberryInterface
 
 import RPi.GPIO as GPIO
 from picamera import PiCamera

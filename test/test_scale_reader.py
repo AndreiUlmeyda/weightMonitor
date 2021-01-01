@@ -1,6 +1,6 @@
 import unittest
-from scale_reader import ScaleReader, MissingInputImageError, MissingConfigLoaderError
-from config_loader import ConfigLoader
+from src.scale_reader import ScaleReader, MissingInputImageError, MissingConfigLoaderError
+from src.config_loader import ConfigLoader
 import json
 from PIL import Image
 

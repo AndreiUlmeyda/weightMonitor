@@ -13,8 +13,8 @@ def is_raspberrypi():
 class RaspberryFactory():
     def new(self):
         if is_raspberrypi():
-            from raspberry import Raspberry
+            from src.raspberry import Raspberry
             return Raspberry()
         else:
-            from raspberry_mock import RaspberryMock
+            from src.raspberry_mock import RaspberryMock
             return RaspberryMock()

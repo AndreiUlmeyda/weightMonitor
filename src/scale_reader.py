@@ -11,8 +11,8 @@ from datetime import datetime
 import json
 import os
 from PIL import Image  # type: ignore
-from config_loader import ConfigLoader
-from ocr import Ocr
+from src.config_loader import ConfigLoader
+from src.ocr import Ocr
 
 
 class MissingInputImageError(Exception):

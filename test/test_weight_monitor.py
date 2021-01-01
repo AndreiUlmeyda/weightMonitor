@@ -1,12 +1,11 @@
-from scale_reader import ScaleReader
+from src.scale_reader import ScaleReader
 import unittest
 from unittest.mock import MagicMock, patch
-from weight_monitor import WeightMonitor
-from scale_reader import ScaleReader
+from src.weight_monitor import WeightMonitor
 
 
 class TestWeightMonitor(unittest.TestCase):
-    @patch('scale_reader.ScaleReader')
+    @patch('src.scale_reader.ScaleReader')
     def setUp(self, ScaleReaderMock) -> None:
         self.audio_feedback = MagicMock()
         self.ocr = ScaleReaderMock()
@@ -51,3 +50,10 @@ class TestWeightMonitor(unittest.TestCase):
         self.monitor.weightFromPictureToDatabase()
 
         self.database.writeWeight.assert_not_called()
+
+    def testStartSoundIsPlayed(self):
+        self.buildMonitor()
+
+        self.monitor.weightFromPictureToDatabase()
+
+        self.audio_feedback.start.assert_called_once()
