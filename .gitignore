@@ -5,3 +5,4 @@ config.json
 *.swp
 *cache*
 *vscode*
+.coverage
