@@ -52,7 +52,6 @@ class WeightMonitor:
                 f"error: readout '{readout}' cannot be interpreted as a number."
             )
             self.audio.error()
-            self.scale_reader.showDebugImages()
             return
 
         if self.weight < 95 and self.weight > 83:

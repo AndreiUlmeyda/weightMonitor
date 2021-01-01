@@ -109,7 +109,3 @@ class ScaleReader:
         weight = readout[2:4] + '.' + readout[4]
 
         return weight
-
-    def showDebugImages(self) -> None:
-        # TODO redo using tkinter
-        pass
