@@ -31,6 +31,8 @@ class TestWeightMonitor(unittest.TestCase):
         self.monitor.weightFromPictureToDatabase()
 
         self.database.writeWeight.assert_called_once_with(plausibleWeight)
+        #self.audio_feedback.success.assert_called_once()
+        #TODO add test do differentiate database error
 
     def testIgnoreImplausibleWeight(self):
         implausibleWeight = 3
@@ -41,15 +43,6 @@ class TestWeightMonitor(unittest.TestCase):
 
         self.database.writeWeight.assert_not_called()
 
-    def testImplausibleWeightErrorSound(self):
-        implausibleWeight = 3
-        self.ocr.readWeight.return_value = implausibleWeight
-        self.buildMonitor()
-
-        self.monitor.weightFromPictureToDatabase()
-
-        self.audio_feedback.error.assert_called_once()
-
     def testIgnorePlausibleWeightOnDryRuns(self):
         plausibleWeight = 90
         self.ocr.readWeight.return_value = plausibleWeight
@@ -58,6 +51,7 @@ class TestWeightMonitor(unittest.TestCase):
 
         self.monitor.weightFromPictureToDatabase()
 
+        self.audio_feedback.success.assert_called_once()
         self.database.writeWeight.assert_not_called()
 
     def testStartSoundIsPlayed(self):
