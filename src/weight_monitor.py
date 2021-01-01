@@ -76,6 +76,13 @@ is not in the range of assumed values between 83kg and 95kg")
             return
 
     def run(self):
+        threadWeightToDatabase = threading.Thread(
+            target=self.weightFromPictureToDatabase)
+        threadSoundInProgress = threading.Thread(target=self.audio.in_progress)
+        threadWeightToDatabase.start()
+        sleep(1)
+        threadSoundInProgress.start()
+        threadWeightToDatabase.join()
         self.rpi.on_button_press(self.db.weightFromPictureToDatabase)
 
 
