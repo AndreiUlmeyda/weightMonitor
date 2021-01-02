@@ -41,7 +41,6 @@ class TestWeightMonitor(unittest.TestCase):
 
         self.monitor.weightFromPictureToDatabase()
 
-        self.database.writeWeight.assert_called_once_with(plausibleWeight)
         self.audio_feedback.error.assert_called_once()
 
     def testIgnoreImplausibleWeight(self):
@@ -52,6 +51,7 @@ class TestWeightMonitor(unittest.TestCase):
         self.monitor.weightFromPictureToDatabase()
 
         self.database.writeWeight.assert_not_called()
+        self.audio_feedback.error.assert_called_once()
 
     def testIgnorePlausibleWeightOnDryRuns(self):
         plausibleWeight = 90
