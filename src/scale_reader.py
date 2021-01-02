@@ -7,9 +7,6 @@ segment display.
 
 """
 
-from datetime import datetime
-import json
-import os
 from PIL import Image  # type: ignore
 from src.config_loader import ConfigLoader
 from src.ocr import Ocr

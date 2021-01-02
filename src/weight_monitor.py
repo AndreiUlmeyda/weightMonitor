@@ -82,7 +82,7 @@ is not in the range of assumed values between 83kg and 95kg")
         sleep(1)
         threadSoundInProgress.start()
         threadWeightToDatabase.join()
-        self.rpi.on_button_press(self.db.weightFromPictureToDatabase)
+        #self.rpi.on_button_press(self.db.weightFromPictureToDatabase)
 
 
 if __name__ == "__main__":

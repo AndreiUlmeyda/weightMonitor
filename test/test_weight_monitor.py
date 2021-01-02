@@ -1,4 +1,3 @@
-from src.scale_reader import ScaleReader
 import unittest
 from unittest.mock import MagicMock, patch
 from src.weight_monitor import WeightMonitor
@@ -26,13 +25,24 @@ class TestWeightMonitor(unittest.TestCase):
     def testWritePlausibleWeightToDatabase(self):
         plausibleWeight = 90
         self.ocr.readWeight.return_value = plausibleWeight
+        self.database.writeWeight.return_value = None
         self.buildMonitor()
 
         self.monitor.weightFromPictureToDatabase()
 
         self.database.writeWeight.assert_called_once_with(plausibleWeight)
-        #self.audio_feedback.success.assert_called_once()
-        #TODO add test do differentiate database error
+        self.audio_feedback.success.assert_called_once()
+
+    def testPlausibleWeightDatabaseError(self):
+        plausibleWeight = 90
+        self.ocr.readWeight.return_value = plausibleWeight
+        self.database.writeWeight.return_value = 'some error'
+        self.buildMonitor()
+
+        self.monitor.weightFromPictureToDatabase()
+
+        self.database.writeWeight.assert_called_once_with(plausibleWeight)
+        self.audio_feedback.error.assert_called_once()
 
     def testIgnoreImplausibleWeight(self):
         implausibleWeight = 3
