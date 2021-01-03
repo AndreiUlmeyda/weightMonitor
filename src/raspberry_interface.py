@@ -7,5 +7,5 @@ class RaspberryInterface(ABC):
         pass
 
     @abstractmethod
-    def on_button_press(self, action):
+    def loop_and_on_button_press(self, action):
         pass

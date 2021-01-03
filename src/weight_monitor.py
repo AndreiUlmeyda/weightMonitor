@@ -73,7 +73,7 @@ is not in the range of assumed values between 83kg and 95kg")
             self.scale_reader.showDebugImages()
             return
 
-    def run(self):
+    def startAndPlayProgressSound(self):
         threadWeightToDatabase = threading.Thread(
             target=self.weightFromPictureToDatabase)
         threadSoundInProgress = threading.Thread(target=self.audio.in_progress)
@@ -81,4 +81,7 @@ is not in the range of assumed values between 83kg and 95kg")
         sleep(1)
         threadSoundInProgress.start()
         threadWeightToDatabase.join()
-        #self.rpi.on_button_press(self.db.weightFromPictureToDatabase)
+
+    
+    def run(self):
+        self.rpi.loop_and_on_button_press(self.startAndPlayProgressSound)

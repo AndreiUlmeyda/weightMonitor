@@ -20,7 +20,7 @@ class Raspberry(RaspberryInterface):
         buffer.seek(0)
         return Image.open(buffer)
 
-    def on_button_press(self, action):
+    def loop_and_on_button_press(self, action):
         while True:
             if self.pinHigh():
                 if self.pinHighForAnotherWhile():

@@ -7,6 +7,6 @@ class RaspberryMock(RaspberryInterface):
         print('mocked image capture')
         return Image.new(mode='RGB', size=(1024,768), color=0)
 
-    def on_button_press(self, action):
+    def loop_and_on_button_press(self, action):
         print('mocked action')
         action()
