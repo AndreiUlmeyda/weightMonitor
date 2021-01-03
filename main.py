@@ -8,9 +8,9 @@ from src.database import Database
 from src.weight_monitor import WeightMonitor
 import logging
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format='%(levelname)s:%(message)s')
 
-logging.info('Preparing')
+logging.info('Preparing...')
 
 dry_run = "-d" in sys.argv or "--dry-run" in sys.argv
 
