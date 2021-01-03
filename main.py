@@ -11,7 +11,7 @@ import logging
 
 dry_run = "-d" in sys.argv or "--dry-run" in sys.argv
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 monitor = WeightMonitor(scale_reader=ScaleReader(ConfigLoader(json)),
                         audio_feedback=AudioFeedback(),
