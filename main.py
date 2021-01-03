@@ -8,10 +8,11 @@ from src.database import Database
 from src.weight_monitor import WeightMonitor
 import logging
 
+logging.basicConfig(level=logging.INFO)
+
+logging.info('Preparing')
 
 dry_run = "-d" in sys.argv or "--dry-run" in sys.argv
-
-logging.basicConfig(level=logging.INFO)
 
 monitor = WeightMonitor(scale_reader=ScaleReader(ConfigLoader(json)),
                         audio_feedback=AudioFeedback(),
@@ -19,4 +20,5 @@ monitor = WeightMonitor(scale_reader=ScaleReader(ConfigLoader(json)),
                         raspberry_factory=RaspberryFactory(),
                         delay=7,
                         dry_run=dry_run)
+                        
 monitor.run()

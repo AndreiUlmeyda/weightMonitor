@@ -17,6 +17,7 @@ import json
 from picamera import PiCamera  # type: ignore
 from PIL import Image, ImageTk  # type: ignore
 from src.calibrator import Calibrator
+import logging
 
 CONFIG_FILE_NAME = 'config.json'
 
@@ -50,10 +51,10 @@ def writeConfig() -> None:
     if error is None:
         with open(CONFIG_FILE_NAME, 'w') as file:
             json.dump(calibration, file, indent=4)
-        print(NOTIFICATION_CALIBRATION_COMPLETE)
+        logging.info(NOTIFICATION_CALIBRATION_COMPLETE)
         window.quit()
     else:
-        print(NOTIFICATION_CALIBRATION_INCOMPLETE)
+        logging.info(NOTIFICATION_CALIBRATION_INCOMPLETE)
 
 
 def markCorner(event) -> None:

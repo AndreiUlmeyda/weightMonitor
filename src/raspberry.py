@@ -5,6 +5,7 @@ from picamera import PiCamera
 from PIL import Image
 import io
 from time import sleep
+import logging
 
 
 class Raspberry(RaspberryInterface):
@@ -21,6 +22,8 @@ class Raspberry(RaspberryInterface):
         return Image.open(buffer)
 
     def loop_and_on_button_press(self, action):
+        # TODO remove the need for this module to know something about the action it is performing
+        logging.info('...ready. Please step on the scale at any time to measure and store your weight.')
         while True:
             if self.pinHigh():
                 if self.pinHighForAnotherWhile():

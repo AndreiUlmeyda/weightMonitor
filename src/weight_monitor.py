@@ -47,8 +47,8 @@ class WeightMonitor:
         try:
             self.weight = float(readout)
         except ValueError:
-            logging.info(
-                f"error: readout '{readout}' cannot be interpreted as a number."
+            logging.error(
+                f"Readout '{readout}' cannot be interpreted as a number."
             )
             self.audio.error()
             return
@@ -60,17 +60,16 @@ class WeightMonitor:
 
             if error is None:
                 logging.info(
-                    f"a weight reading of {self.weight}kg has been commited to the database."
+                    f"A weight reading of {self.weight}kg has been commited to the database."
                 )
                 self.audio.success()
             else:
-                logging.info(error)
+                logging.error(error)
                 self.audio.error()
         else:
-            logging.info(f"error: readout '{self.weight}' \
+            logging.error(f"Readout '{self.weight}' \
 is not in the range of assumed values between 83kg and 95kg")
             self.audio.error()
-            self.scale_reader.showDebugImages()
             return
 
     def startAndPlayProgressSound(self):
