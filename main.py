@@ -6,9 +6,13 @@ from src.config_loader import ConfigLoader
 from src.scale_reader import ScaleReader
 from src.database import Database
 from src.weight_monitor import WeightMonitor
+import logging
 
 
 dry_run = "-d" in sys.argv or "--dry-run" in sys.argv
+
+logging.basicConfig(level=logging.DEBUG)
+
 monitor = WeightMonitor(scale_reader=ScaleReader(ConfigLoader(json)),
                         audio_feedback=AudioFeedback(),
                         database=Database,
