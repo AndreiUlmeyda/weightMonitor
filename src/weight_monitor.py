@@ -33,8 +33,8 @@ class WeightMonitor:
         self.audio.start()
 
         if self.dry_run:
-            logging.info(
-                "!This is a dry run, nothing will be commited to database!")
+            logging.warning(
+                "This is a dry run. Nothing will be commited to database!")
         # when hitting the button right when stepping on the scale, the delay
         # of 7 seconds roughly matches the time the camera operates with
         # the time the scale displays the final reading
