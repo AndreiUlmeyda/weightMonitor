@@ -78,7 +78,7 @@ is not in the range of assumed values between 83kg and 95kg")
             target=self.weightFromPictureToDatabase)
         threadSoundInProgress = threading.Thread(target=self.audio.in_progress)
         threadWeightToDatabase.start()
-        sleep(1)
+        sleep(1.5)
         threadSoundInProgress.start()
         threadWeightToDatabase.join()
 
