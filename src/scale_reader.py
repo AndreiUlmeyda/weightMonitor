@@ -65,7 +65,7 @@ class ScaleReader:
 
         config = self.configLoader.getConfig()
 
-        lcdRegion = image.transform(image, Image.QUAD, [
+        lcdRegion = image.transform(image.size, Image.QUAD, [
             config['northwest']['x'], config['northwest']['y'],
             config['southwest']['x'], config['southwest']['y'],
             config['southeast']['x'], config['southeast']['y'],
