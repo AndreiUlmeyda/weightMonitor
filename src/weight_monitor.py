@@ -4,9 +4,10 @@
 This module provides a class to transfer measurements from
 a bathroom scale to a database.
 """
+
 from time import sleep
 
-import sys
+
 import threading
 import logging
 
@@ -16,8 +17,7 @@ class WeightMonitor:
                  scale_reader,
                  audio_feedback,
                  database,
-                 raspberry,
-                 config_loader,
+                 raspberry_factory,
                  delay=0,
                  dry_run=False) -> None:
         self.dry_run = dry_run
@@ -25,8 +25,7 @@ class WeightMonitor:
         self.audio = audio_feedback
         self.scale_reader = scale_reader
         self.db = database
-        self.rpi = raspberry
-        self.config_loader = config_loader
+        self.rpi = raspberry_factory.new()
         self.delay = delay
 
     def weightFromPictureToDatabase(self) -> None:
@@ -83,9 +82,3 @@ is not in the range of assumed values between 83kg and 95kg")
         threadSoundInProgress.start()
         threadWeightToDatabase.join()
         #self.rpi.on_button_press(self.db.weightFromPictureToDatabase)
-
-
-if __name__ == "__main__":
-    dry_run = "-d" in sys.argv or "--dry-run" in sys.argv
-    monitor = WeightMonitor(dry_run=dry_run)
-    monitor.run()

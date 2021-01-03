@@ -9,8 +9,7 @@ class TestWeightMonitor(unittest.TestCase):
         self.audio_feedback = MagicMock()
         self.ocr = ScaleReaderMock()
         self.database = MagicMock()
-        self.raspberry = MagicMock()
-        self.config_loader = MagicMock()
+        self.raspberry_factory = MagicMock()
         self.dry_run = False
         self.buildMonitor()
 
@@ -18,8 +17,7 @@ class TestWeightMonitor(unittest.TestCase):
         self.monitor = WeightMonitor(audio_feedback=self.audio_feedback,
                                      scale_reader=self.ocr,
                                      database=self.database,
-                                     raspberry=self.raspberry,
-                                     config_loader=self.config_loader,
+                                     raspberry_factory=self.raspberry_factory,
                                      dry_run=self.dry_run)
 
     def testWritePlausibleWeightToDatabase(self):
