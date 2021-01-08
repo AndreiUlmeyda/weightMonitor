@@ -20,5 +20,5 @@ monitor = WeightMonitor(scale_reader=ScaleReader(ConfigLoader(json)),
                         raspberry_factory=RaspberryFactory(),
                         delay=7,
                         dry_run=dry_run)
-                        
+
 monitor.run()

@@ -7,7 +7,6 @@ a bathroom scale to a database.
 
 from time import sleep
 
-
 import threading
 import logging
 
@@ -48,8 +47,7 @@ class WeightMonitor:
             self.weight = float(readout)
         except ValueError:
             logging.error(
-                f"Readout '{readout}' cannot be interpreted as a number."
-            )
+                f"Readout '{readout}' cannot be interpreted as a number.")
             self.audio.error()
             return
 
@@ -81,6 +79,5 @@ is not in the range of assumed values between 83kg and 95kg")
         threadSoundInProgress.start()
         threadWeightToDatabase.join()
 
-    
     def run(self):
         self.rpi.loop_and_on_button_press(self.startAndPlayProgressSound)
