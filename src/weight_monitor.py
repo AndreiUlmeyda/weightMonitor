@@ -58,7 +58,7 @@ class WeightMonitor:
 
             if error is None:
                 logging.info(
-                    f"A weight reading of {self.weight}kg has been commited to the database."
+                    f"{self.weight}kg has been commited to the database."
                 )
                 self.audio.success()
             else:
