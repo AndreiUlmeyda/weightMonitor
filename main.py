@@ -1,4 +1,5 @@
 import sys
+import os
 import json
 from src.raspberry_factory import RaspberryFactory
 from src.audio_feedback import AudioFeedback
@@ -10,6 +11,7 @@ import logging
 
 logging.basicConfig(level=logging.INFO, format='%(levelname)s:%(message)s')
 
+os.system('clear')
 logging.info('Preparing...')
 
 dry_run = "-d" in sys.argv or "--dry-run" in sys.argv
