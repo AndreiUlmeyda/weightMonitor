@@ -14,10 +14,11 @@ The reset button will undo all previous clicks.
 import tkinter as tk
 import io
 import json
+import logging
+
 from picamera import PiCamera  # type: ignore
 from PIL import Image, ImageTk  # type: ignore
 from src.calibrator import Calibrator
-import logging
 
 CONFIG_FILE_NAME = 'config.json'
 
