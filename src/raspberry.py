@@ -10,7 +10,7 @@ import logging
 
 class Raspberry(RaspberryInterface):
     def __init__(self):
-        GPIO.setWarnings(False)
+        GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(10, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
