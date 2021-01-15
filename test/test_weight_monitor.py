@@ -11,7 +11,7 @@ from src.weight_monitor import WeightMonitor
 class TestWeightMonitor(unittest.TestCase):
     """
     For different outputs of the ScaleReader it is checked whether
-    correct values are commited to database and whether appropriate
+    correct values are commited to the database and whether appropriate
     audio feedback is provided.
     """
     @patch('src.scale_reader.ScaleReader')
