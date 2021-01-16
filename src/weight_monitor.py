@@ -54,7 +54,7 @@ class WeightMonitor:
         if self.weight < 95 and self.weight > 83:
             error = None
             if not self.dry_run:
-                error = self.db.writeWeight(self.weight)
+                error = self.db.write_weight(self.weight)
 
             if error is None:
                 logging.info(

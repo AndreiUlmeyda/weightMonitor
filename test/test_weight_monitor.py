@@ -42,12 +42,12 @@ class TestWeightMonitor(unittest.TestCase):
         """
         plausible_weight = 90
         self.ocr.readWeight.return_value = plausible_weight
-        self.database.writeWeight.return_value = None
+        self.database.write_weight.return_value = None
         self.build_monitor()
 
         self.monitor.weightFromPictureToDatabase()
 
-        self.database.writeWeight.assert_called_once_with(plausible_weight)
+        self.database.write_weight.assert_called_once_with(plausible_weight)
         self.audio_feedback.success.assert_called_once()
 
     def test_plausible_weight_database_error(self):
@@ -74,7 +74,7 @@ class TestWeightMonitor(unittest.TestCase):
 
         self.monitor.weightFromPictureToDatabase()
 
-        self.database.writeWeight.assert_not_called()
+        self.database.write_weight.assert_not_called()
         self.audio_feedback.error.assert_called_once()
 
     def test_ignore_plausible_weight_on_dry_runs(self):
@@ -89,7 +89,7 @@ class TestWeightMonitor(unittest.TestCase):
         self.monitor.weightFromPictureToDatabase()
 
         self.audio_feedback.success.assert_called_once()
-        self.database.writeWeight.assert_not_called()
+        self.database.write_weight.assert_not_called()
 
     def test_start_sound_is_played(self):
         """
@@ -111,5 +111,5 @@ class TestWeightMonitor(unittest.TestCase):
 
         self.monitor.weightFromPictureToDatabase()
 
-        self.database.writeWeight.assert_not_called()
+        self.database.write_weight.assert_not_called()
         self.audio_feedback.error.assert_called_once()
