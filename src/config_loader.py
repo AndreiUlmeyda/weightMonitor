@@ -8,42 +8,42 @@ class MissingConfigValuesError(Exception):
     pass
 
 
-class ConfigLoader():
+class ConfigLoader:
     """
     Provide functionality to load config values
     from a file and assure that all required
     keys are present
     """
-    def __init__(self, jsonParser):
-        self.jsonParser = jsonParser
+    def __init__(self, json_parser):
+        self.jsonParser = json_parser
         self.requiredCornerKeys = [
             'northwest', 'southwest', 'southeast', 'northeast'
         ]
         self.loadedConfig = {}
 
-    def loadConfigFile(self):
+    def load_config_file(self):
         with open('config.json') as file:
             self.loadedConfig = self.jsonParser.load(file)
 
-    def verifyEntriesForEachCorner(self):
+    def verify_entries_for_each_corner(self):
         for requiredKey in self.requiredCornerKeys:
-            if not requiredKey in self.loadedConfig:
+            if requiredKey not in self.loadedConfig:
                 raise MissingConfigValuesError
 
-    def verifyCoordinatesForEachCorner(self):
+    def verify_coordinates_for_each_corner(self):
         for cornerKey in self.requiredCornerKeys:
-            cornerCoordinates = self.loadedConfig[cornerKey]
-            xCoordMissing = not 'x' in cornerCoordinates
-            yCoordMissing = not 'y' in cornerCoordinates
-            if xCoordMissing or yCoordMissing:
+            corner_coordinates = self.loadedConfig[cornerKey]
+            x_coord_missing = 'x' not in corner_coordinates
+            y_coord_missing = 'y' not in corner_coordinates
+            if x_coord_missing or y_coord_missing:
                 raise MissingConfigValuesError
 
-    def verifyRequiredConfigValues(self):
-        self.verifyEntriesForEachCorner()
-        self.verifyCoordinatesForEachCorner()
+    def verify_required_config_values(self):
+        self.verify_entries_for_each_corner()
+        self.verify_coordinates_for_each_corner()
 
-    def getConfig(self):
-        self.loadConfigFile()
-        self.verifyRequiredConfigValues()
+    def get_config(self):
+        self.load_config_file()
+        self.verify_required_config_values()
 
         return self.loadedConfig

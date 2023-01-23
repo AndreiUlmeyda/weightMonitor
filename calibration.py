@@ -48,7 +48,7 @@ def writeConfig() -> None:
     """
     If calibration was successful, write the config values to a file.
     """
-    (calibration, error) = calibrator.getCalibration()
+    (calibration, error) = calibrator.get_calibration()
     if error is None:
         with open(CONFIG_FILE_NAME, 'w') as file:
             json.dump(calibration, file, indent=4)

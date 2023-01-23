@@ -18,7 +18,7 @@ class Ocr:
         A few parameters are set in order to be able to recover from
         common errors during OCR. For instance, wrong placement of the
         decimal point is avoided by suppressing the output of decimal points
-        and inserting them later under the assumption the the digits are correct
+        and inserting them later under the assumption that the digits are correct
         and in order.
         """
         file_path = 'ready_for_ocr.jpg'
@@ -44,4 +44,4 @@ class Ocr:
 
         readout = completed.stdout
         error = completed.stderr
-        return (readout, error)
+        return readout, error

@@ -6,7 +6,7 @@ Simple module to provide write access to a local database.
 import subprocess
 
 
-class Database():
+class Database:
     """
     Allow writing to a local InfluxDB using the command line interface.
     """
@@ -17,7 +17,7 @@ class Database():
 
     def write_weight(self, weight):
         """
-        Assume database name, measurementname etc. and use a subprocess
+        Assume database name, measurement name etc. and use a subprocess
         to call the InfluxDB command line tool.
         """
         influx_line = f"INSERT {self.measurement_name} {self.field_name}={weight}"

@@ -4,13 +4,13 @@ This is a factory class used to instantiate a fake
 Raspberry object when it is run on non-Raspberry-Pi
 machines. A real Raspberry object would try to
 import modules which are not available on the platform,
-for instancd RPi.GPIO.
+for instance RPi.GPIO.
 """
 
 import io
 
 
-class RaspberryFactory():
+class RaspberryFactory:
     """
     A factory to instantiate different objects implementing the RaspberryInterface
     depending on the current platform.

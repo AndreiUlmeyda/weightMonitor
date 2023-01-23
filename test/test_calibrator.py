@@ -8,20 +8,20 @@ class TestCalibration(unittest.TestCase):
         self.calibrator = Calibrator()
 
     def testUncalibratedWithoutActions(self) -> None:
-        (_, error) = self.calibrator.getCalibration()
+        (_, error) = self.calibrator.get_calibration()
 
         self.assertIsNotNone(error)
 
     def testUncalibratedAfterOneClick(self) -> None:
         self.calibrator.click(x=0, y=0)
-        (_, error) = self.calibrator.getCalibration()
+        (_, error) = self.calibrator.get_calibration()
 
         self.assertIsNotNone(error)
 
     def testCalibratedAfterFourClicks(self) -> None:
         for _ in range(4):
             self.calibrator.click(x=0, y=0)
-        (calibration, error) = self.calibrator.getCalibration()
+        (calibration, error) = self.calibrator.get_calibration()
 
         self.assertIsNone(error)
         self.assertIsNotNone(calibration)
@@ -31,14 +31,14 @@ class TestCalibration(unittest.TestCase):
             self.calibrator.click(x=0, y=0)
         self.calibrator.reset()
 
-        (_, error) = self.calibrator.getCalibration()
+        (_, error) = self.calibrator.get_calibration()
 
         self.assertIsNotNone(error)
 
     def testCalibratedAfterMoreThanFourClicks(self) -> None:
         for _ in range(15):
             self.calibrator.click(x=0, y=0)
-        (calibration, error) = self.calibrator.getCalibration()
+        (calibration, error) = self.calibrator.get_calibration()
 
         self.assertIsNone(error)
         self.assertIsNotNone(calibration)

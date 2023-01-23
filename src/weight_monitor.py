@@ -36,7 +36,7 @@ class WeightMonitor:
         self.rpi = raspberry_factory.new()
         self.delay = delay
 
-    def weightFromPictureToDatabase(self) -> None:
+    def weight_from_picture_to_database(self) -> None:
         """
         Take a picture and perform OCR on the image.
         If the result passes sanity checks (being a value of the currently possible weight range),
@@ -48,7 +48,7 @@ class WeightMonitor:
 
         if self.dry_run:
             logging.warning(
-                "This is a dry run. Nothing will be commited to database!")
+                "This is a dry run. Nothing will be committed to database!")
         # when hitting the button right when stepping on the scale, the delay
         # of 7 seconds roughly matches the time the camera operates with
         # the time the scale displays the final reading
@@ -56,23 +56,23 @@ class WeightMonitor:
         image = self.rpi.take_picture()
 
         # process the image
-        readout = self.scale_reader.readWeight(image)
+        readout = self.scale_reader.read_weight(image)
 
         try:
-            self.weight = float(readout)
+            self.weight = readout
         except ValueError:
             logging.error('Readout %s cannot be interpreted as a number.',
                           readout)
             self.audio.error()
             return
 
-        if self.weight < 95 and self.weight > 83:
+        if 95 > self.weight > 83:
             error = None
             if not self.dry_run:
                 error = self.db.write_weight(self.weight)
 
             if error is None:
-                logging.info('%skg has been commited to the database.',
+                logging.info('%skg has been committed to the database.',
                              self.weight)
                 self.audio.success()
             else:
@@ -85,22 +85,22 @@ class WeightMonitor:
             self.audio.error()
             return
 
-    def startAndPlayProgressSound(self):
+    def start_and_play_progress_sound(self):
         """
         Starting the procedure and playing the 'in progress' sound needs
         to happen concurrently in order to make sense.
         """
-        threadWeightToDatabase = threading.Thread(
-            target=self.weightFromPictureToDatabase)
-        threadSoundInProgress = threading.Thread(target=self.audio.in_progress)
-        threadWeightToDatabase.start()
+        thread_weight_to_database = threading.Thread(
+            target=self.weight_from_picture_to_database)
+        thread_sound_in_progress = threading.Thread(target=self.audio.in_progress)
+        thread_weight_to_database.start()
         sleep(1.5)
-        threadSoundInProgress.start()
-        threadWeightToDatabase.join()
+        thread_sound_in_progress.start()
+        thread_weight_to_database.join()
 
     def run(self):
         """
         Let the Raspberry-Pi interface use its capabilities to detect button presses
         start the process.
         """
-        self.rpi.loop_and_on_button_press(self.startAndPlayProgressSound)
+        self.rpi.loop_and_on_button_press(self.start_and_play_progress_sound)

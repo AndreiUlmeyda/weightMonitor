@@ -7,7 +7,7 @@ from pydub.playback import play
 from pydub import AudioSegment
 
 
-class AudioFeedback():
+class AudioFeedback:
     """
     AudioFeedback is used to load sound files on startup and provide an interface
     to play sounds indicating different stages of the process.

@@ -38,7 +38,7 @@ class TestConfigLoader(unittest.TestCase):
         json.load = MagicMock(return_value={})
         config_loader = ConfigLoader(json)
 
-        self.assertRaises(MissingConfigValuesError, config_loader.getConfig)
+        self.assertRaises(MissingConfigValuesError, config_loader.get_config)
 
     def test_missing_corner_config_value(self):
         """
@@ -50,7 +50,7 @@ class TestConfigLoader(unittest.TestCase):
 
         config_loader = ConfigLoader(json)
 
-        self.assertRaises(MissingConfigValuesError, config_loader.getConfig)
+        self.assertRaises(MissingConfigValuesError, config_loader.get_config)
 
     def test_no_error_with_complete_config(self):
         """
@@ -60,11 +60,11 @@ class TestConfigLoader(unittest.TestCase):
 
         config_loader = ConfigLoader(json)
 
-        self.assertEqual(config_loader.getConfig(), self.valid_config)
+        self.assertEqual(config_loader.get_config(), self.valid_config)
 
     def test_missing_coordinate(self):
         """
-        Even if a coordinate is only partially missing an exception shouldd be raised.
+        Even if a coordinate is only partially missing an exception should be raised.
         """
         incomplete_config = self.valid_config
         del incomplete_config['northwest']['x']
@@ -72,4 +72,4 @@ class TestConfigLoader(unittest.TestCase):
 
         config_loader = ConfigLoader(json)
 
-        self.assertRaises(MissingConfigValuesError, config_loader.getConfig)
+        self.assertRaises(MissingConfigValuesError, config_loader.get_config)

@@ -17,13 +17,13 @@ class Calibrator:
     def __init__(self) -> None:
         self.cornerIndex: int = 0
 
-        zeroCoordinate = PixelCoordinate(x=0, y=0)
-        self.calibration = Calibration(northwest=zeroCoordinate,
-                                       southwest=zeroCoordinate,
-                                       southeast=zeroCoordinate,
-                                       northeast=zeroCoordinate)
+        zero_coordinate = PixelCoordinate(x=0, y=0)
+        self.calibration = Calibration(northwest=zero_coordinate,
+                                       southwest=zero_coordinate,
+                                       southeast=zero_coordinate,
+                                       northeast=zero_coordinate)
 
-    def isCalibrated(self) -> bool:
+    def is_calibrated(self) -> bool:
         """
         Indicate whether all four corners have been set
         """
@@ -40,25 +40,25 @@ class Calibrator:
         Record successive pixel coordinates counter-clockwise starting
         at the north-west corner of a tetragon
         """
-        inputCoordinate = PixelCoordinate(x=x, y=y)
+        input_coordinate = PixelCoordinate(x=x, y=y)
 
         if self.cornerIndex == 0:
-            self.calibration["northwest"] = inputCoordinate
+            self.calibration["northwest"] = input_coordinate
         elif self.cornerIndex == 1:
-            self.calibration["southwest"] = inputCoordinate
+            self.calibration["southwest"] = input_coordinate
         elif self.cornerIndex == 2:
-            self.calibration["southeast"] = inputCoordinate
+            self.calibration["southeast"] = input_coordinate
         elif self.cornerIndex == 3:
-            self.calibration["northeast"] = inputCoordinate
+            self.calibration["northeast"] = input_coordinate
 
         self.cornerIndex += 1
 
-    def getCalibration(self) -> CalibrationResult:
+    def get_calibration(self) -> CalibrationResult:
         """
-        Return calibration data and, depending on the wether
+        Return calibration data and, depending on the whether
         calibration was successfully completed beforehand, an error
         """
-        if self.isCalibrated():
-            return (self.calibration, None)
+        if self.is_calibrated():
+            return self.calibration, None
         else:
-            return (self.calibration, ERROR_NOT_CALIBRATED)
+            return self.calibration, ERROR_NOT_CALIBRATED
